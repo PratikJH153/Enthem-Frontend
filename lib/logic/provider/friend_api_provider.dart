@@ -1,0 +1,67 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
+import '/constants/constants.dart';
+import '/models/friend.dart';
+import '/services/api_options.dart';
+import '/services/debug_console.dart';
+import '../contracts/friend_contract.dart';
+
+class FriendAPIProvider extends FriendContract {
+  final Dio _dio = Dio();
+  final String _url = '$baseUrl/user';
+  static const String filename = "friend_api_provider.dart";
+
+  @override
+  Future<List<Friend>> recommendFriends(String userID, int offset) async {
+    try {
+      final jsonData = {"id": userID};
+      Response response = await _dio.get(
+        "$_url/recommend",
+        data: json.encode(jsonData),
+        queryParameters: {
+          "offset": offset.toString(),
+        },
+        options: getOptions(),
+      );
+      final data = json.decode(response.toString());
+      final List<Friend> recommendList = [];
+      debugData(data["data"], filename);
+      data["data"].forEach((e) => recommendList.add(Friend.fromJson(e)));
+
+      return recommendList;
+    } catch (error) {
+      debugError(error.toString(), filename);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<Friend>> findCompatible(String userID, int offset) async {
+    try {
+      final jsonData = {"id": userID};
+      Response response = await _dio.get(
+        "$_url/foryou",
+        data: json.encode(jsonData),
+        queryParameters: {
+          "offset": offset,
+        },
+        options: getOptions(),
+      );
+      final data = json.decode(response.toString());
+      final List<Friend> recommendList = [];
+      debugData(data["data"], filename);
+      data["data"].forEach((e) => recommendList.add(Friend.fromJson(e)));
+
+      return recommendList;
+    } catch (error) {
+      debugError(error.toString(), filename);
+      rethrow;
+    }
+  }
+
+  @override
+  void close() {
+    _dio.close();
+  }
+}
