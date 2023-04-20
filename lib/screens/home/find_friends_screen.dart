@@ -101,12 +101,17 @@ class _FindFriendsPageState extends State<FindFriendsPage> {
                   children: [
                     BlocProvider<ForYouBloc>(
                       create: (_) => ForYouBloc(),
-                      child: SliderViewRecommendation(userID: widget.user!.id!),
+                      child: SliderViewRecommendation(
+                        userID: widget.user!.id!,
+                        isLocationGiven: widget.user!.isLocationGiven,
+                      ),
                     ),
                     BlocProvider<NearYouBloc>(
                       create: (_) => NearYouBloc(),
                       child: SliderViewRecommendationNear(
-                          userID: widget.user!.id!),
+                        userID: widget.user!.id!,
+                        isLocationGiven: widget.user!.isLocationGiven,
+                      ),
                     ),
                   ],
                 ),

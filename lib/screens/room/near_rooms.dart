@@ -5,6 +5,7 @@ import 'package:enthem2frontend/models/room.dart';
 import 'package:enthem2frontend/models/user.dart';
 import 'package:enthem2frontend/screens/room/chat_page.dart';
 import 'package:enthem2frontend/services/debug_console.dart';
+import 'package:enthem2frontend/views/no_rooms_found_view.dart';
 import 'package:enthem2frontend/widgets/custom_snackbar.dart';
 import 'package:enthem2frontend/widgets/loading_widget.dart';
 import 'package:enthem2frontend/widgets/shaded_list_widget.dart';
@@ -73,63 +74,7 @@ class _NearRoomsPageState extends State<NearRoomsPage> {
           : RefreshIndicator(
               onRefresh: refresh,
               child: roomsList.isEmpty
-                  ? Center(
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 15,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Lottie.asset(
-                              "assets/images/rocket.json",
-                              height: 200,
-                              width: 200,
-                            ),
-                            const Text(
-                              "Oops! There are no rooms near you",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontFamily: "Poppins",
-                                fontSize: 20,
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            const Text(
-                              "Create a room",
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            const Text(
-                              "OR",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontFamily: "Poppins",
-                                fontSize: 20,
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                refresh();
-                              },
-                              child: const Text(
-                                "Search more",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    )
+                  ? NoRoomsFoundScreen(onTap: refresh)
                   : ListView.builder(
                       padding: const EdgeInsets.only(
                         bottom: 100,
@@ -157,13 +102,15 @@ class _NearRoomsPageState extends State<NearRoomsPage> {
                           ),
                           child: InkWell(
                             onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => ChatPage(
-                                  user: widget.user!,
-                                  room: roomsList[index],
-                                  distance: distance,
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => ChatPage(
+                                    user: widget.user!,
+                                    room: roomsList[index],
+                                    distance: distance,
+                                  ),
                                 ),
-                              ));
+                              );
                             },
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,

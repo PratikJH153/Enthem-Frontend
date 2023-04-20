@@ -1,16 +1,15 @@
 // ignore_for_file: file_names
 
+import 'package:enthem2frontend/helper/error_constants.dart';
 import 'package:flutter/material.dart';
 
 import '/firebase/sign_in_method.dart';
-import '/helper/shared_pref.dart';
 import '/logic/repositories/user_api_repository.dart';
 import '/screens/auth/interests_screen.dart';
 import '/screens/auth/onboard_screen.dart';
 import '/screens/auth/splash_screen.dart';
 import '/screens/home/home_screen.dart';
 import '/services/debug_console.dart';
-import '/widgets/custom_snackbar.dart';
 
 class UserEntryPage extends StatefulWidget {
   static const routeID = "/userentrypage";
@@ -24,95 +23,64 @@ class _UserEntryPageState extends State<UserEntryPage> {
   static const String filename = "wrapper.dart";
   final AuthService _authService = AuthService();
   final UserAPIRepository _apiRepository = UserAPIRepository();
-  bool _isUserSignedIn = false;
+  bool _isLoading = false;
   bool _isUserRegistered = false;
-  bool isLoading = false;
+  bool _isUserGoogleSignedIn = false;
+  bool _isUserInterestsExists = false;
 
   @override
   void initState() {
-    getUser();
+    checkUserStatus();
     super.initState();
   }
 
-  void getUser() async {
-    setState(() {
-      isLoading = true;
-    });
-    await checkAndSetUserStatus();
-    Future.delayed(const Duration(milliseconds: 500), () {
+  Future<void> checkUserStatus() async {
+    try {
       setState(() {
-        isLoading = false;
+        _isLoading = true;
       });
-    });
-  }
-
-  Future<bool> userExists(String id) async {
-    try {
-      final bool data = await _apiRepository.checkUserExists(id);
-      return data;
-    } catch (err) {
-      showSnackBar(
-        context: context,
-        status: "failure",
-        title: "Server issue!",
-        des: "Could not connect to the server! Please try again later!",
-      );
-      rethrow;
-    }
-  }
-
-  Future<bool> checkInterestsExists(String id) async {
-    try {
-      final bool data = await _apiRepository.checkInterestsAdded(id);
-      return data;
-    } catch (err) {
-      showSnackBar(
-        context: context,
-        status: "failure",
-        title: "Server issue!",
-        des: "Could not connect to the server! Please try again later!",
-      );
-      rethrow;
-    }
-  }
-
-  Future<void> checkAndSetUserStatus() async {
-    final id = await _authService.getCurrentUserID();
-    if (id != null) {
-      final isRegistered = await RegisterUser.getBool();
-      if (isRegistered != null && isRegistered == true) {
-        debugData("Shared Registered", filename);
-        setState(() {
-          _isUserRegistered = true;
-          _isUserSignedIn = true;
-        });
-      } else {
-        final isUser = await userExists(id);
-        if (isUser) {
+      final currentUserID = _authService.getCurrentUserID();
+      setState(() {
+        _isUserGoogleSignedIn = true;
+      });
+      if (currentUserID != null) {
+        final isUserRegistered =
+            await _apiRepository.checkUserExists(currentUserID);
+        if (isUserRegistered) {
           setState(() {
-            _isUserSignedIn = true;
+            _isUserRegistered = true;
           });
-          final isInterestsAdded = await checkInterestsExists(id);
-          if (isInterestsAdded) {
+          final isUserInterestsRegistered =
+              await _apiRepository.checkInterestsAdded(currentUserID);
+          if (isUserInterestsRegistered) {
             setState(() {
-              _isUserRegistered = true;
+              _isUserInterestsExists = true;
             });
-            await RegisterUser.setBool(true);
           }
-        } else {
-          await RegisterUser.setBool(false);
         }
       }
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (err) {
+      debugError(err.toString(), filename);
+      errorSnackBar(
+        context: context,
+        error: ErrorState.serverError,
+      );
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return !isLoading
-        ? (_isUserSignedIn
-            ? !_isUserRegistered
-                ? const InterestsPage()
-                : const HomePage()
+    return !_isLoading
+        ? (_isUserGoogleSignedIn && _isUserRegistered
+            ? _isUserInterestsExists
+                ? const HomePage()
+                : const InterestsPage()
             : const OnboardPage())
         : AnimatedContainer(
             duration: const Duration(milliseconds: 1500),

@@ -1,7 +1,6 @@
 import '/constants/page_padding.dart';
 import '/database/repositories/room_api_repository.dart';
 import '/firebase/sign_in_method.dart';
-import '/helper/capitalize_text.dart';
 import '/helper/error_constants.dart';
 import '/logic/repositories/user_api_repository.dart';
 import '/models/room.dart';
@@ -10,7 +9,6 @@ import '/screens/auth/onboard_screen.dart';
 import '/theme/theme.dart';
 import '/utils/location_permission.dart';
 import '/widgets/custom_snackbar.dart';
-import '/widgets/done_button.dart';
 import '/widgets/loading_widget.dart';
 import '/widgets/profile_rooms.dart';
 import '/widgets/settings_button.dart';
@@ -39,6 +37,7 @@ class _ProfilePageState extends State<ProfilePage> {
   bool _isSettingsLoading = false;
   bool _isLocationLoading = false;
   Position? _currentPosition;
+  late int index1;
 
   Future<void> _getCurrentPosition() async {
     setState(() {
@@ -80,6 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
         "latitude": _currentPosition?.latitude,
         "longitude": _currentPosition?.longitude,
       });
+      //TODO: IT IS NOT UPDATING IN LOCAL
     } catch (err) {
       errorSnackBar(context: context, error: ErrorState.serverError);
     }
@@ -89,6 +89,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     _usernameController.text = widget.user!.username!;
     getRoomsByOwnerID();
+    index1 = (widget.user!.interests!.length ~/ 2).floor();
     super.initState();
   }
 
@@ -154,10 +155,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 title: "Edit Profile",
                 onTap: () {},
               ),
-              SettingsButton(
-                title: "Notification Settings",
-                onTap: () {},
-              ),
+              // SettingsButton(
+              //   title: "Notification Settings",
+              //   onTap: () {},
+              // ),
               const SizedBox(
                 height: 30,
               ),
@@ -231,8 +232,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                 });
                                 bool isDeleted = await _userAPIRepository
                                     .deleteUser({"id": widget.user!.id!});
-                                bool isDeletedSQL = await _userAPIRepository
-                                    .deleteUserSQL(widget.user!.id!);
+                                // bool isDeletedSQL = await _userAPIRepository
+                                //     .deleteUserSQL(widget.user!.id!);
                                 if (isDeleted) {
                                   await _authService.signOut();
                                   if (context.mounted) {
@@ -264,7 +265,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               }
                             },
                             child: const Center(
-                              child: Text("Deactivate Account"),
+                              child: Text("Delete Account Permanently"),
                             ),
                           ),
                         ),
@@ -277,57 +278,57 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget usernameChange() {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 24,
-        vertical: 30,
-      ),
-      margin: const EdgeInsets.only(top: 120),
-      color: backgroundColor,
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: 5,
-          ),
-          const Text(
-            "Change your username",
-            style: TextStyle(
-              fontSize: 20,
-              fontFamily: "Poppins",
-            ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          Container(
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-              color: Colors.black12,
-            ),
-            child: TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.only(left: 20),
-                hintText: "Username",
-                border: InputBorder.none,
-              ),
-            ),
-          ),
-          const Spacer(),
-          DoneButton(
-            title: "Done",
-            isDisabled: false,
-            onTap: () {},
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget usernameChange() {
+  //   return Container(
+  //     padding: const EdgeInsets.symmetric(
+  //       horizontal: 24,
+  //       vertical: 30,
+  //     ),
+  //     margin: const EdgeInsets.only(top: 120),
+  //     color: backgroundColor,
+  //     child: Column(
+  //       mainAxisSize: MainAxisSize.max,
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         const SizedBox(
+  //           height: 5,
+  //         ),
+  //         const Text(
+  //           "Change your username",
+  //           style: TextStyle(
+  //             fontSize: 20,
+  //             fontFamily: "Poppins",
+  //           ),
+  //         ),
+  //         const SizedBox(
+  //           height: 15,
+  //         ),
+  //         Container(
+  //           decoration: const BoxDecoration(
+  //             borderRadius: BorderRadius.all(
+  //               Radius.circular(10),
+  //             ),
+  //             color: Colors.black12,
+  //           ),
+  //           child: TextField(
+  //             controller: _usernameController,
+  //             decoration: const InputDecoration(
+  //               contentPadding: EdgeInsets.only(left: 20),
+  //               hintText: "Username",
+  //               border: InputBorder.none,
+  //             ),
+  //           ),
+  //         ),
+  //         const Spacer(),
+  //         DoneButton(
+  //           title: "Done",
+  //           isDisabled: false,
+  //           onTap: () {},
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -361,102 +362,86 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       body: SingleChildScrollView(
         child: SafeArea(
-          child: Padding(
-            padding: kPagePadding,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  margin: const EdgeInsets.only(bottom: 15),
-                  decoration: const BoxDecoration(
-                    color: Color.fromARGB(255, 37, 36, 37),
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                  ),
-                  child: Text(
-                    "${widget.user!.username.toString()[0].toUpperCase()}${widget.user!.username.toString()[widget.user!.username!.length - 1].toUpperCase()}",
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontFamily: "Poppins",
-                    ),
-                  ),
-                ),
-                Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: kPagePadding,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      margin: const EdgeInsets.only(bottom: 15),
+                      decoration: const BoxDecoration(
+                        color: Color.fromARGB(255, 37, 36, 37),
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                      ),
+                      child: Text(
+                        "${widget.user!.username.toString()[0].toUpperCase()}${widget.user!.username.toString()[widget.user!.username!.length - 1].toUpperCase()}",
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontFamily: "Poppins",
+                        ),
+                      ),
+                    ),
                     Text(
-                      widget.user!.username!.capitalize(),
+                      widget.user!.username!,
                       style: const TextStyle(
                         fontSize: 30,
                         fontFamily: "Poppins",
                       ),
                     ),
-                    IconButton(
-                      onPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) {
-                            return usernameChange();
-                          },
-                        );
-                      },
-                      icon: const Icon(CupertinoIcons.pen),
-                    )
-                  ],
-                ),
-                Text(
-                  widget.user!.email!,
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    // TextButton(
-                    //   onPressed: () {},
-                    //   style: TextButton.styleFrom(
-                    //     padding: EdgeInsets.zero,
-                    //     textStyle: const TextStyle(
-                    //       fontSize: 16,
-                    //     ),
-                    //   ),
-                    //   child: const Text(
-                    //     "Add a bio",
-                    //   ),
-                    // ),
-                    // const SizedBox(
-                    //   width: 20,
-                    // ),
-                    _isLocationLoading
-                        ? const Center(
-                            child: LoadingWidget(),
-                          )
-                        : TextButton(
-                            onPressed: () async {
-                              await _getCurrentPosition().then((value) async {
-                                debugData(_currentPosition, filename);
-                                await updateUser();
-                              }).catchError((err) {});
-                            },
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              textStyle: const TextStyle(
-                                fontSize: 16,
+                    Text(
+                      widget.user!.email!,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      children: [
+                        // TextButton(
+                        //   onPressed: () {},
+                        //   style: TextButton.styleFrom(
+                        //     padding: EdgeInsets.zero,
+                        //     textStyle: const TextStyle(
+                        //       fontSize: 16,
+                        //     ),
+                        //   ),
+                        //   child: const Text(
+                        //     "Add a bio",
+                        //   ),
+                        // ),
+                        // const SizedBox(
+                        //   width: 20,
+                        // ),
+                        _isLocationLoading
+                            ? const Center(
+                                child: LoadingWidget(),
+                              )
+                            : TextButton(
+                                onPressed: () async {
+                                  await _getCurrentPosition()
+                                      .then((value) async {
+                                    debugData(_currentPosition, filename);
+                                    await updateUser();
+                                  }).catchError((err) {});
+                                },
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  textStyle: const TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                child: const Text(
+                                  "Update my location",
+                                ),
                               ),
-                            ),
-                            child: const Text(
-                              "Update my location",
-                            ),
-                          ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
                     const Text(
                       "Interests",
                       style: TextStyle(
@@ -464,141 +449,139 @@ class _ProfilePageState extends State<ProfilePage> {
                         color: Colors.white54,
                       ),
                     ),
-                    TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        textStyle: const TextStyle(
-                          fontSize: 14,
-                        ),
-                      ),
-                      child: const Text(
-                        "View All",
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    SizedBox(
-                      height: 35,
-                      child: ListView.builder(
-                        itemCount: widget.user!.interests!.length ~/ 2,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 15,
-                              vertical: 5,
-                            ),
-                            margin: const EdgeInsets.only(
-                              right: 10,
-                            ),
-                            alignment: Alignment.center,
-                            decoration: const BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(100),
-                              ),
-                              color: Colors.white24,
-                            ),
-                            child: Text(
-                              widget.user!.interests![index],
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
                     const SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      height: 35,
-                      child: ListView.builder(
-                        itemCount: widget.user!.interests!.length -
-                            widget.user!.interests!.length ~/ 2,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 15,
-                              vertical: 5,
-                            ),
-                            margin: const EdgeInsets.only(
-                              right: 10,
-                            ),
-                            alignment: Alignment.center,
-                            decoration: const BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(100),
-                              ),
-                              color: Colors.white24,
-                            ),
-                            child: Text(
-                              widget.user!.interests![index +
-                                  widget.user!.interests!.length -
-                                  widget.user!.interests!.length ~/ 2 -
-                                  1],
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                      height: 15,
                     ),
                   ],
                 ),
-                const SizedBox(
-                  height: 15,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              ),
+              Column(
+                children: [
+                  SizedBox(
+                    height: 35,
+                    child: ListView.builder(
+                      itemCount: index1,
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.only(left: 15),
+                      itemBuilder: (context, index) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 15,
+                            vertical: 5,
+                          ),
+                          margin: const EdgeInsets.only(
+                            right: 10,
+                          ),
+                          alignment: Alignment.center,
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(100),
+                            ),
+                            color: Colors.white24,
+                          ),
+                          child: Text(
+                            widget.user!.interests![index],
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  SizedBox(
+                    height: 35,
+                    child: ListView.builder(
+                      itemCount: widget.user!.interests!.length - index1,
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.only(left: 15),
+                      itemBuilder: (context, index) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 15,
+                            vertical: 5,
+                          ),
+                          margin: const EdgeInsets.only(
+                            right: 10,
+                          ),
+                          alignment: Alignment.center,
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(100),
+                            ),
+                            color: Colors.white24,
+                          ),
+                          child: Text(
+                            widget.user!.interests![index + index1],
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: kPagePadding,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Rooms",
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        color: Colors.white54,
-                      ),
+                    const SizedBox(
+                      height: 15,
                     ),
-                    TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        textStyle: const TextStyle(
-                          fontSize: 14,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Rooms",
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            color: Colors.white54,
+                          ),
                         ),
-                      ),
-                      child: const Text(
-                        "View All",
-                      ),
+                        TextButton(
+                          onPressed: () {},
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            textStyle: const TextStyle(
+                              fontSize: 14,
+                            ),
+                          ),
+                          child: const Text(
+                            "View All",
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      height: 200,
+                      margin: const EdgeInsets.only(bottom: 20),
+                      child: _isLoading
+                          ? const Center(child: LoadingWidget())
+                          : rooms.isEmpty
+                              ? const Text("No rooms created yet")
+                              : ListView.builder(
+                                  itemCount: rooms.length,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, index) {
+                                    return ProfileRoomsWidget(
+                                        room: rooms[index]);
+                                  },
+                                ),
                     ),
                   ],
                 ),
-                Container(
-                  height: 200,
-                  margin: const EdgeInsets.only(bottom: 20),
-                  child: _isLoading
-                      ? const Center(child: LoadingWidget())
-                      : rooms.isEmpty
-                          ? const Text("No rooms created yet")
-                          : ListView.builder(
-                              itemCount: rooms.length,
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (context, index) {
-                                return ProfileRoomsWidget(room: rooms[index]);
-                              },
-                            ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

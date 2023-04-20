@@ -25,8 +25,10 @@ Widget carouselView(PageController pageController, int index, Widget widget) {
 
 Widget carouselCard(
   Friend data,
-  BuildContext context,
-) {
+  BuildContext context, {
+  bool showCompatible = true,
+  bool showMiles = true,
+}) {
   return Column(
     children: <Widget>[
       Expanded(
@@ -76,19 +78,6 @@ Widget carouselCard(
                           fontFamily: "Poppins",
                         ),
                       ),
-                      // child: ClipRRect(
-                      //   borderRadius: const BorderRadius.only(
-                      //     topLeft: Radius.circular(30),
-                      //     topRight: Radius.circular(30),
-                      //   ),
-                      //   child: Image.network(
-                      //     data.photoURL,
-                      //     fit: BoxFit.cover,
-                      //     errorBuilder: (context, exception, stackTrace) {
-                      //       return Image.asset("assets/images/dummy.png");
-                      //     },
-                      //   ),
-                      // ),
                     ),
                   ),
                 ),
@@ -111,14 +100,16 @@ Widget carouselCard(
                               fontSize: 16,
                               fontWeight: FontWeight.bold),
                         ),
-                        Text(
-                          "${data.distance.toStringAsFixed(2)} mil",
-                          style: const TextStyle(
-                            color: Colors.white60,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        showMiles
+                            ? Text(
+                                "${data.distance.toStringAsFixed(2)} mil",
+                                style: const TextStyle(
+                                  color: Colors.white60,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              )
+                            : const SizedBox(),
                       ],
                     ),
                     Text(
@@ -129,27 +120,57 @@ Widget carouselCard(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(
-                      height: 4,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text("Compatible"),
-                        Text("${data.compatible.toString()}%")
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 7.0),
-                      child: LinearPercentIndicator(
-                        lineHeight: 3,
-                        barRadius: const Radius.circular(10),
-                        padding: const EdgeInsets.all(0),
-                        percent: data.compatible / 100,
-                        progressColor: primaryColor,
-                        backgroundColor: Colors.black38,
-                      ),
-                    ),
+                    showCompatible
+                        ? Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text("Compatible"),
+                                  Text("${data.compatible.toString()}%")
+                                ],
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 7.0),
+                                child: LinearPercentIndicator(
+                                  lineHeight: 3,
+                                  barRadius: const Radius.circular(10),
+                                  padding: const EdgeInsets.all(0),
+                                  percent: data.compatible / 100,
+                                  progressColor: primaryColor,
+                                  backgroundColor: Colors.black38,
+                                ),
+                              ),
+                            ],
+                          )
+                        : Wrap(
+                            children: data.interests
+                                .map(
+                                  (e) => Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white10,
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    margin: const EdgeInsets.only(
+                                      right: 5,
+                                      top: 5,
+                                    ),
+                                    child: Text(
+                                      e,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

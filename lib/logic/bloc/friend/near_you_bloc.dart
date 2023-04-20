@@ -8,14 +8,14 @@ class NearYouBloc extends Cubit<NearYouState> {
   static final _provider = FriendAPIProvider();
   final UserAPIRepository _repository = UserAPIRepository();
 
-  NearYouBloc() : super(NearYouLoadingState()){
+  NearYouBloc() : super(NearYouLoadingState()) {
     final String userId = _repository.getUserID();
     fetchNearby(userId, 0);
   }
 
   Future<void> fetchNearby(String userId, int offset) async {
     try {
-      List<Friend> friendList = await _provider.recommendFriends(userId, offset);
+      List<Friend> friendList = await _provider.nearby(userId, offset);
 
       emit(NearYouFetchedState(friendList));
     } catch (e) {

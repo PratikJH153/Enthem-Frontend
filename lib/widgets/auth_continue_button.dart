@@ -43,9 +43,12 @@ class AuthContinueButton extends StatelessWidget {
             duration: const Duration(milliseconds: 200),
             onPressed: () => isDisabled
                 ? null
-                : Future.delayed(const Duration(milliseconds: 200), () {
-                    onTap();
-                  }),
+                : Future.delayed(
+                    const Duration(milliseconds: 200),
+                    () {
+                      onTap();
+                    },
+                  ),
             child: Container(
               width: double.infinity,
               alignment: Alignment.center,

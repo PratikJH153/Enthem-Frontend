@@ -59,41 +59,40 @@ class UserAPIRepository extends IUserService {
   Future<List<UserModel>> getUsers(List<String> ids) {
     return _provider.getUsers(ids);
   }
+  // @override
+  // Future<bool> checkUserExistsSQL(String id) {
+  //   return _provider.checkUserExistsSQL(id);
+  // }
 
-  @override
-  Future<bool> checkUserExistsSQL(String id) {
-    return _provider.checkUserExistsSQL(id);
-  }
+  // @override
+  // Future<bool> deleteUserSQL(String id) {
+  //   return _provider.deleteUserSQL(id);
+  // }
 
-  @override
-  Future<bool> deleteUserSQL(String id) {
-    return _provider.deleteUserSQL(id);
-  }
+  // @override
+  // Future<UserModel> getUserSQL(String id) {
+  //   return _provider.getUserSQL(id);
+  // }
 
-  @override
-  Future<UserModel> getUserSQL(String id) {
-    return _provider.getUserSQL(id);
-  }
+  // @override
+  // Future<bool> registerUserSQL(UserModel user) {
+  //   return _provider.registerUserSQL(user);
+  // }
 
-  @override
-  Future<bool> registerUserSQL(UserModel user) {
-    return _provider.registerUserSQL(user);
-  }
+  // @override
+  // Future<bool> updateUserSQL(Map<String, dynamic> user) {
+  //   return _provider.updateUserSQL(user);
+  // }
 
-  @override
-  Future<bool> updateUserSQL(Map<String, dynamic> user) {
-    return _provider.updateUserSQL(user);
-  }
+  // @override
+  // Future<bool> addSQLInterests(String id, List<String> interests) {
+  //   return _provider.addSQLInterests(id, interests);
+  // }
 
-  @override
-  Future<bool> addSQLInterests(String id, List<String> interests) {
-    return _provider.addSQLInterests(id, interests);
-  }
-
-  @override
-  Future<bool> checkInterestsSQLAdded(String id) {
-    return _provider.checkInterestsAdded(id);
-  }
+  // @override
+  // Future<bool> checkInterestsSQLAdded(String id) {
+  //   return _provider.checkInterestsAdded(id);
+  // }
 }
 
 class NetworkError extends Error {}

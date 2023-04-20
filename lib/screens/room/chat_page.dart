@@ -33,6 +33,18 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     connect();
+    socket!.on("sendMsgServer", (msg) {
+      setState(() {
+        messagesList.add(
+          Message(
+            type: "msg",
+            msg: msg["content"],
+            sender: msg["sender"],
+            timestamp: DateTime.parse(msg["timestamp"]),
+          ),
+        );
+      });
+    });
     super.initState();
   }
 
@@ -58,8 +70,8 @@ class _ChatPageState extends State<ChatPage> {
               Message(
                 type: "msg",
                 msg: msg["content"],
-                sender: msg["senderChatID"],
-                timestamp: msg["timestamp"],
+                sender: msg["sender"],
+                timestamp: DateTime.parse(msg["timestamp"]),
               ),
             );
           });
@@ -102,8 +114,9 @@ class _ChatPageState extends State<ChatPage> {
       "sendMsg",
       {
         'content': msg,
-        'senderChatID': widget.user!.id!,
+        'senderChatID': sender,
         'receiverChatID': widget.room.id!,
+        "timestamp": DateTime.now().toString(),
       },
     );
   }
@@ -229,7 +242,9 @@ class _ChatPageState extends State<ChatPage> {
                       onPressed: () {
                         if (_messageController.text.trim().isNotEmpty) {
                           sendMessage(
-                              _messageController.text, widget.user!.username!);
+                            _messageController.text,
+                            widget.user!.username!,
+                          );
                           _messageController.clear();
                         }
                       },

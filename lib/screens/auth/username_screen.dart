@@ -1,5 +1,6 @@
 import 'package:enthem2frontend/constants/page_padding.dart';
 import 'package:enthem2frontend/helper/error_constants.dart';
+import 'package:enthem2frontend/helper/helpers.dart';
 import 'package:enthem2frontend/interfaces/user.dart';
 import 'package:enthem2frontend/logic/repositories/user_api_repository.dart';
 import 'package:enthem2frontend/screens/auth/dob_screen.dart';
@@ -149,7 +150,8 @@ class _UsernamePageState extends State<UsernamePage> {
                           if (val!.trim().isNotEmpty &&
                               3 < val.trim().length &&
                               val.trim().length < 16) {
-                            return null;
+                            final name = validateName(val);
+                            return name;
                           }
                           return "Atleast 4-15 characters required";
                         },

@@ -6,12 +6,11 @@ import 'package:enthem2frontend/logic/contracts/user_contract.dart';
 import 'package:enthem2frontend/models/user.dart';
 import 'package:enthem2frontend/services/api_options.dart';
 import 'package:enthem2frontend/services/debug_console.dart';
-import 'package:enthem2frontend/utils/user_sql.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserAPIProvider extends IUserService {
   final Dio _dio = Dio();
-  final UserSQLRepository _userSQLRepository = UserSQLRepository.instance;
+  // final UserSQLRepository _userSQLRepository = UserSQLRepository.instance;
   final String _url = '$baseUrl/user';
 
   static const String filename = "user_api_provider.dart";
@@ -82,10 +81,12 @@ class UserAPIProvider extends IUserService {
         options: getOptions(),
       );
       debugData(response.toString(), filename);
-      if (response.data != null) {
+      if (response.data != null && response.statusCode != 404) {
         return UserModel.fromJson(response.data["data"]);
-      } else {
+      } else if (response.statusCode == 404) {
         throw Exception("User not found!");
+      } else {
+        throw Exception("Server error");
       }
     } catch (error) {
       debugError(error.toString(), filename);
@@ -233,70 +234,70 @@ class UserAPIProvider extends IUserService {
     }
   }
 
-  @override
-  Future<bool> checkUserExistsSQL(String id) async {
-    try {
-      final exists = await _userSQLRepository.checkUserExistsSQL(id);
-      return exists;
-    } catch (error) {
-      debugError(error.toString(), filename);
-      rethrow;
-    }
-  }
+  // @override
+  // Future<bool> checkUserExistsSQL(String id) async {
+  //   try {
+  //     final exists = await _userSQLRepository.checkUserExistsSQL(id);
+  //     return exists;
+  //   } catch (error) {
+  //     debugError(error.toString(), filename);
+  //     rethrow;
+  //   }
+  // }
 
-  @override
-  Future<bool> deleteUserSQL(String id) async {
-    try {
-      final deleted = await _userSQLRepository.deleteUserById(id);
-      return deleted;
-    } catch (error) {
-      debugError(error.toString(), filename);
-      rethrow;
-    }
-  }
+  // @override
+  // Future<bool> deleteUserSQL(String id) async {
+  //   try {
+  //     final deleted = await _userSQLRepository.deleteUserById(id);
+  //     return deleted;
+  //   } catch (error) {
+  //     debugError(error.toString(), filename);
+  //     rethrow;
+  //   }
+  // }
 
-  @override
-  Future<UserModel> getUserSQL(String id) async {
-    try {
-      final user = await _userSQLRepository.getUserById(id);
-      return user!;
-    } catch (error) {
-      debugError(error.toString(), filename);
-      rethrow;
-    }
-  }
+  // @override
+  // Future<UserModel> getUserSQL(String id) async {
+  //   try {
+  //     final user = await _userSQLRepository.getUserById(id);
+  //     return user!;
+  //   } catch (error) {
+  //     debugError(error.toString(), filename);
+  //     rethrow;
+  //   }
+  // }
 
-  @override
-  Future<bool> registerUserSQL(UserModel user) async {
-    try {
-      final userRegistered = await _userSQLRepository.createUser(user);
-      return userRegistered;
-    } catch (error) {
-      debugError(error.toString(), filename);
-      rethrow;
-    }
-  }
+  // @override
+  // Future<bool> registerUserSQL(UserModel user) async {
+  //   try {
+  //     final userRegistered = await _userSQLRepository.createUser(user);
+  //     return userRegistered;
+  //   } catch (error) {
+  //     debugError(error.toString(), filename);
+  //     rethrow;
+  //   }
+  // }
 
-  @override
-  Future<bool> updateUserSQL(Map<String, dynamic> user) async {
-    try {
-      final userRegistered =
-          await _userSQLRepository.updateUser(UserModel.fromJson(user));
-      return userRegistered;
-    } catch (error) {
-      debugError(error.toString(), filename);
-      rethrow;
-    }
-  }
+  // @override
+  // Future<bool> updateUserSQL(Map<String, dynamic> user) async {
+  //   try {
+  //     final userRegistered =
+  //         await _userSQLRepository.updateUser(UserModel.fromJson(user));
+  //     return userRegistered;
+  //   } catch (error) {
+  //     debugError(error.toString(), filename);
+  //     rethrow;
+  //   }
+  // }
 
-  @override
-  Future<bool> addSQLInterests(String id, List<String> interests) async {
-    try {
-      final data = await _userSQLRepository.addSQLInterests(id, interests);
-      return data;
-    } catch (error) {
-      debugError(error.toString(), filename);
-      rethrow;
-    }
-  }
+  // @override
+  // Future<bool> addSQLInterests(String id, List<String> interests) async {
+  //   try {
+  //     final data = await _userSQLRepository.addSQLInterests(id, interests);
+  //     return data;
+  //   } catch (error) {
+  //     debugError(error.toString(), filename);
+  //     rethrow;
+  //   }
+  // }
 }

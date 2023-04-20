@@ -10,9 +10,11 @@ import 'package:flutter/material.dart';
 
 class SliderViewRecommendation extends StatefulWidget {
   final String userID;
+  final bool isLocationGiven;
 
   const SliderViewRecommendation({
     required this.userID,
+    required this.isLocationGiven,
     super.key,
   });
 
@@ -79,7 +81,11 @@ class _SliderViewRecommendationState extends State<SliderViewRecommendation> {
                   _pageController,
                   index,
                   index < friends.length
-                      ? carouselCard(friends[index], context)
+                      ? carouselCard(
+                          friends[index],
+                          context,
+                          showMiles: widget.isLocationGiven,
+                        )
                       : Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: InkWell(

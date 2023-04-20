@@ -1,5 +1,6 @@
 import 'package:enthem2frontend/logic/bloc/friend/near_you_bloc.dart';
 import 'package:enthem2frontend/logic/bloc/friend/near_you_state.dart';
+import 'package:enthem2frontend/views/location_not_given_view.dart';
 
 import '/widgets/carousal.dart';
 import '/widgets/loading_widget.dart';
@@ -9,8 +10,10 @@ import 'package:lottie/lottie.dart';
 
 class SliderViewRecommendationNear extends StatefulWidget {
   final String userID;
+  final bool isLocationGiven;
   const SliderViewRecommendationNear({
     required this.userID,
+    required this.isLocationGiven,
     super.key,
   });
 
@@ -68,19 +71,25 @@ class _SliderViewRecommendationNearState
                 return carouselView(
                   _pageController,
                   index,
-                  index < friends.length
-                      ? carouselCard(friends[index], context)
-                      : InkWell(
-                          onTap: () {},
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(25),
-                          ),
-                          child: Lottie.asset(
-                            "assets/images/find.json",
-                            fit: BoxFit.contain,
-                            reverse: true,
-                          ),
-                        ),
+                  !widget.isLocationGiven
+                      ? const LocationNotGivenScreen()
+                      : index < friends.length
+                          ? carouselCard(
+                              friends[index],
+                              context,
+                              showCompatible: false,
+                            )
+                          : InkWell(
+                              onTap: () {},
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(25),
+                              ),
+                              child: Lottie.asset(
+                                "assets/images/find.json",
+                                fit: BoxFit.contain,
+                                reverse: true,
+                              ),
+                            ),
                 );
               },
             ),

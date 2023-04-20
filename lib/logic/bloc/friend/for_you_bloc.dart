@@ -16,7 +16,7 @@ class ForYouBloc extends Cubit<ForYouState> {
 
   Future<void> fetchFriends(String userId, int offset) async {
     try {
-      List<Friend> friendList = await _provider.findCompatible(userId, offset);
+      List<Friend> friendList = await _provider.foryou(userId, offset);
 
       emit(ForYouFetchedState(friendList));
     } catch (e) {

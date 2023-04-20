@@ -1,6 +1,5 @@
 import 'package:enthem2frontend/interfaces/user.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class UserModel extends Equatable {
   final String? id;
@@ -12,6 +11,10 @@ class UserModel extends Equatable {
   final List<dynamic>? interests;
   final double? latitude;
   final double? longitude;
+
+  bool get isLocationGiven {
+    return !(latitude == -90.0 && longitude == 0);
+  }
 
   const UserModel({
     required this.id,
@@ -39,8 +42,8 @@ class UserModel extends Equatable {
       gender: userData.gender,
       age: int.parse(userData.age.toString()),
       interests: userData.interests,
-      latitude: userData.latitude ?? -90,
-      longitude: userData.longitude ?? 0,
+      latitude: userData.latitude ?? -90.0,
+      longitude: userData.longitude ?? 0.0,
     );
 
     return user;
@@ -58,12 +61,12 @@ class UserModel extends Equatable {
       latitude: userData["latitude"] is Map
           ? double.parse(userData["latitude"]["low"].toString())
           : userData["latitude"] == null
-              ? -90
+              ? -90.0
               : double.parse(userData["latitude"].toString()),
       longitude: userData["longitude"] is Map
           ? double.parse(userData["longitude"]["low"].toString())
           : userData["longitude"] == null
-              ? 0
+              ? 0.0
               : double.parse(userData["longitude"].toString()),
     );
     return user;

@@ -13,11 +13,11 @@ class FriendAPIProvider extends FriendContract {
   static const String filename = "friend_api_provider.dart";
 
   @override
-  Future<List<Friend>> recommendFriends(String userID, int offset) async {
+  Future<List<Friend>> nearby(String userID, int offset) async {
     try {
       final jsonData = {"id": userID};
       Response response = await _dio.get(
-        "$_url/recommend",
+        "$_url/nearby",
         data: json.encode(jsonData),
         queryParameters: {
           "offset": offset.toString(),
@@ -37,7 +37,7 @@ class FriendAPIProvider extends FriendContract {
   }
 
   @override
-  Future<List<Friend>> findCompatible(String userID, int offset) async {
+  Future<List<Friend>> foryou(String userID, int offset) async {
     try {
       final jsonData = {"id": userID};
       Response response = await _dio.get(

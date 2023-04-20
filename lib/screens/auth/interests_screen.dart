@@ -1,6 +1,5 @@
 import 'package:enthem2frontend/constants/page_padding.dart';
 import 'package:enthem2frontend/helper/error_constants.dart';
-import 'package:enthem2frontend/helper/shared_pref.dart';
 import 'package:enthem2frontend/logic/repositories/user_api_repository.dart';
 import 'package:enthem2frontend/models/user.dart';
 import 'package:enthem2frontend/screens/home/home_screen.dart';
@@ -55,10 +54,8 @@ class _InterestsPageState extends State<InterestsPage> {
         selectedInterests,
       );
       if (data) {
-        await RegisterUser.setBool(true);
         navigateToHomePage();
       } else {
-        await RegisterUser.setBool(false);
         if (context.mounted) {
           errorSnackBar(context: context, error: ErrorState.serverError);
         }
@@ -75,7 +72,7 @@ class _InterestsPageState extends State<InterestsPage> {
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: AuthContinueButton(
-        isDisabled: false,
+        isDisabled: selectedInterests.length < 5,
         onTap: addInterests,
       ),
       body: SafeArea(

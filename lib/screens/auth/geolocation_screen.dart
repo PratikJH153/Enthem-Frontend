@@ -6,9 +6,11 @@ import 'package:enthem2frontend/models/user.dart';
 import 'package:enthem2frontend/screens/auth/interests_screen.dart';
 import 'package:enthem2frontend/screens/home/home_screen.dart';
 import 'package:enthem2frontend/services/debug_console.dart';
+import 'package:enthem2frontend/theme/theme.dart';
 import 'package:enthem2frontend/utils/location_permission.dart';
 import 'package:enthem2frontend/widgets/auth_continue_button.dart';
 import 'package:enthem2frontend/widgets/loading_widget.dart';
+import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -31,6 +33,7 @@ class _GeoLocationPageState extends State<GeoLocationPage> {
   Position? _currentPosition;
   bool _isLoading = false;
   static const String filename = "geolocation_screen.dart";
+  bool isDisabled = true;
 
   final UserAPIRepository _apiRepository = UserAPIRepository();
 
@@ -57,6 +60,7 @@ class _GeoLocationPageState extends State<GeoLocationPage> {
       setState(() {
         _currentPosition = position;
         _isLoading = false;
+        isDisabled = false;
       });
     }).catchError((e) {
       debugError(e.toString(), filename);
@@ -73,8 +77,8 @@ class _GeoLocationPageState extends State<GeoLocationPage> {
       final int isUserRegistered = await _apiRepository.registerUser(
         userModel,
       );
-      final bool isUserSQLRegistered =
-          await _apiRepository.registerUserSQL(userModel);
+      // final bool isUserSQLRegistered =
+      //     await _apiRepository.registerUserSQL(userModel);
       if (context.mounted) {
         if (isUserRegistered == 200) {
           Navigator.of(context).pushAndRemoveUntil(
@@ -83,7 +87,7 @@ class _GeoLocationPageState extends State<GeoLocationPage> {
             ),
             (route) => false,
           );
-        } else if (isUserRegistered == 409 && isUserSQLRegistered) {
+        } else if (isUserRegistered == 409) {
           errorSnackBar(context: context, error: ErrorState.userExists);
           Future.delayed(
               const Duration(
@@ -121,11 +125,73 @@ class _GeoLocationPageState extends State<GeoLocationPage> {
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: AuthContinueButton(
-        isDisabled: _currentPosition == null,
-        onTap: navigateToHomePage,
-        des:
-            "We do not track your location in any way. Your city is used to find relevant people.",
+      floatingActionButton: Container(
+        width: double.infinity,
+        margin: const EdgeInsets.only(
+          bottom: 20,
+          left: 32,
+          right: 32,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "We do not track your location in any way. Your city is used to find relevant people.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.white54,
+                fontSize: 14,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(
+              height: 30,
+            ),
+            Bounce(
+              duration: const Duration(milliseconds: 200),
+              onPressed: () => isDisabled
+                  ? _getCurrentPosition()
+                  : Future.delayed(
+                      const Duration(milliseconds: 200),
+                      registerUser,
+                    ),
+              child: Container(
+                width: double.infinity,
+                alignment: Alignment.center,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
+                decoration: BoxDecoration(
+                  color:
+                      isDisabled ? buttonColor.withOpacity(0.5) : buttonColor,
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(15),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Text(
+                      "Continue",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        color: Colors.black,
+                        fontFamily: "Grandis Extended",
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_right_alt_rounded,
+                      color: Colors.black,
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       body: SafeArea(
         child: Padding(
