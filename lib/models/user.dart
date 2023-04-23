@@ -33,6 +33,11 @@ class UserModel extends Equatable {
     return 'User: {id: $id, username: $username, age: $age, email: $email, photoURL: $photoURL, gender: $gender, interests: $interests, latitude: $latitude, longitude: $longitude}';
   }
 
+  void updateLocation(double? latitude, double? longitude) {
+    latitude = latitude;
+    longitude = longitude;
+  }
+
   factory UserModel.fromInterface(UserInterface userData) {
     final UserModel user = UserModel(
       id: userData.id,

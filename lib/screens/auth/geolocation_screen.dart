@@ -8,7 +8,6 @@ import 'package:enthem2frontend/screens/home/home_screen.dart';
 import 'package:enthem2frontend/services/debug_console.dart';
 import 'package:enthem2frontend/theme/theme.dart';
 import 'package:enthem2frontend/utils/location_permission.dart';
-import 'package:enthem2frontend/widgets/auth_continue_button.dart';
 import 'package:enthem2frontend/widgets/loading_widget.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:lottie/lottie.dart';

@@ -1,3 +1,7 @@
+import 'package:enthem2frontend/helper/display_user_dp.dart';
+import 'package:enthem2frontend/widgets/custom_dialog_box.dart';
+import 'package:enthem2frontend/widgets/dialog_box_widget.dart';
+
 import '/constants/page_padding.dart';
 import '/database/repositories/room_api_repository.dart';
 import '/firebase/sign_in_method.dart';
@@ -80,6 +84,8 @@ class _ProfilePageState extends State<ProfilePage> {
         "longitude": _currentPosition?.longitude,
       });
       //TODO: IT IS NOT UPDATING IN LOCAL
+      widget.user!.updateLocation(
+          _currentPosition?.latitude, _currentPosition?.longitude);
     } catch (err) {
       errorSnackBar(context: context, error: ErrorState.serverError);
     }
@@ -99,13 +105,52 @@ class _ProfilePageState extends State<ProfilePage> {
     super.dispose();
   }
 
-  void signOut(BuildContext context) {
+  void logout(BuildContext context) {
     _authService.signOut().then((value) {
       Navigator.of(context)
           .pushNamedAndRemoveUntil(OnboardPage.routeID, (route) => false);
     }).catchError((err) {
       debugError(err, filename);
     });
+  }
+
+  void deleteAccount() async {
+    try {
+      setState(() {
+        _isSettingsLoading = true;
+      });
+      bool isDeleted =
+          await _userAPIRepository.deleteUser({"id": widget.user!.id!});
+      // bool isDeletedSQL = await _userAPIRepository
+      //     .deleteUserSQL(widget.user!.id!);
+      if (isDeleted) {
+        await _authService.signOut();
+        if (context.mounted) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            OnboardPage.routeID,
+            (route) => false,
+          );
+        } else {
+          setState(() {
+            _isSettingsLoading = false;
+          });
+          errorSnackBar(
+            context: context,
+            error: ErrorState.otherError,
+          );
+        }
+      }
+    } catch (err) {
+      debugError(err.toString(), filename);
+      errorSnackBar(
+        context: context,
+        error: ErrorState.serverError,
+      );
+      setState(() {
+        _isSettingsLoading = false;
+      });
+      rethrow;
+    }
   }
 
   void getRoomsByOwnerID() async {
@@ -205,7 +250,22 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             onPressed: () {
-                              signOut(context);
+                              showCustomDialog(
+                                context,
+                                DialogBoxWidget(
+                                  title: "Logout",
+                                  des:
+                                      "Are you sure want to logout of your account? We will miss you!",
+                                  firstButton: "Yes",
+                                  secondButton: "Cancel",
+                                  firstOnTap: () {
+                                    logout(context);
+                                  },
+                                  secondOnTap: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              );
                             },
                             child: const Center(
                               child: Text("Logout"),
@@ -226,43 +286,22 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             onPressed: () async {
-                              try {
-                                setState(() {
-                                  _isSettingsLoading = true;
-                                });
-                                bool isDeleted = await _userAPIRepository
-                                    .deleteUser({"id": widget.user!.id!});
-                                // bool isDeletedSQL = await _userAPIRepository
-                                //     .deleteUserSQL(widget.user!.id!);
-                                if (isDeleted) {
-                                  await _authService.signOut();
-                                  if (context.mounted) {
-                                    Navigator.of(context)
-                                        .pushNamedAndRemoveUntil(
-                                      OnboardPage.routeID,
-                                      (route) => false,
-                                    );
-                                  } else {
-                                    setState(() {
-                                      _isSettingsLoading = false;
-                                    });
-                                    errorSnackBar(
-                                      context: context,
-                                      error: ErrorState.otherError,
-                                    );
-                                  }
-                                }
-                              } catch (err) {
-                                debugError(err.toString(), filename);
-                                errorSnackBar(
-                                  context: context,
-                                  error: ErrorState.serverError,
-                                );
-                                setState(() {
-                                  _isSettingsLoading = false;
-                                });
-                                rethrow;
-                              }
+                              showCustomDialog(
+                                context,
+                                DialogBoxWidget(
+                                  title: "Delete Account",
+                                  des:
+                                      "Are you sure want to delete your account permanently?",
+                                  firstButton: "Yes",
+                                  secondButton: "Cancel",
+                                  firstOnTap: () {
+                                    deleteAccount();
+                                  },
+                                  secondOnTap: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              );
                             },
                             child: const Center(
                               child: Text("Delete Account Permanently"),
@@ -378,7 +417,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                       ),
                       child: Text(
-                        "${widget.user!.username.toString()[0].toUpperCase()}${widget.user!.username.toString()[widget.user!.username!.length - 1].toUpperCase()}",
+                        displayUserPicture(widget.user!.username!),
                         style: const TextStyle(
                           fontSize: 20,
                           fontFamily: "Poppins",

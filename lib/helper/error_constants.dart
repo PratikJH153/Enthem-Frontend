@@ -15,6 +15,7 @@ enum ErrorState {
   errorLocation,
   interestsNotAdded,
   workingFeature,
+  deleteRoomError,
   otherError,
 }
 
@@ -84,6 +85,12 @@ ErrorModel getError(ErrorState error) {
     return ErrorModel(
       title: "Atleast 5 interests needed!",
       des: "Please add more interests!",
+      status: "failure",
+    );
+  } else if (error == ErrorState.deleteRoomError) {
+    return ErrorModel(
+      title: "Sorry, can't remove the room!",
+      des: "Please try again later!",
       status: "failure",
     );
   } else if (error == ErrorState.workingFeature) {

@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+// ignore: must_be_immutable
 class Room extends Equatable {
   final String? id;
   final String title;
@@ -8,9 +9,9 @@ class Room extends Equatable {
   final DateTime createdAt;
   final List<double> coordinates;
   final int? votes;
-  final List<dynamic>? participants;
+  List<dynamic>? participants;
 
-  const Room({
+  Room({
     this.id,
     required this.title,
     this.des,
