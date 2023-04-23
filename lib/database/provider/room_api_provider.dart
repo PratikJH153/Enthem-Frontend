@@ -59,12 +59,31 @@ class RoomAPIProvider extends RoomContract {
   Future<List<Room>> getAllRooms({
     required double miles,
     required List<double> coordinates,
+    required int page,
   }) async {
     try {
       final jsonData = {"miles": miles, "coordinates": coordinates};
       Response response = await _dio.get(
-        "$_url/all",
+        "$_url/all?page=$page",
         data: json.encode(jsonData),
+        options: getOptions(),
+      );
+      final data = json.decode(response.toString());
+      debugData(data["data"], filename);
+      final List<Room> roomsList = [];
+      data["data"].forEach((room) => roomsList.add(Room.fromJson(room)));
+      return roomsList;
+    } catch (error) {
+      debugError(error.toString(), filename);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<Room>> getPopularRooms({required int page}) async {
+    try {
+      Response response = await _dio.get(
+        "$_url/popular?page=$page",
         options: getOptions(),
       );
       final data = json.decode(response.toString());
@@ -92,6 +111,35 @@ class RoomAPIProvider extends RoomContract {
       final List<Room> roomsList = [];
       data["data"].forEach((room) => roomsList.add(Room.fromJson(room)));
       return roomsList;
+    } catch (error) {
+      debugError(error.toString(), filename);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> deleteRoom({
+    required String roomID,
+    required String ownerID,
+  }) async {
+    try {
+      final jsonData = {
+        "roomID": roomID,
+        "ownerID": ownerID,
+      };
+      print(jsonData);
+      Response response = await _dio.delete(
+        "$_url/",
+        data: json.encode(jsonData),
+        options: getOptions(),
+      );
+      final data = json.decode(response.toString());
+      debugData(response.statusCode, filename);
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (error) {
       debugError(error.toString(), filename);
       rethrow;

@@ -5,6 +5,7 @@ import 'package:enthem2frontend/screens/room/near_rooms.dart';
 import 'package:enthem2frontend/screens/room/world_rooms.dart';
 import 'package:enthem2frontend/theme/theme.dart';
 import 'package:enthem2frontend/widgets/custom_dialog_box.dart';
+import 'package:enthem2frontend/widgets/dialog_box_widget.dart';
 import 'package:enthem2frontend/widgets/explore_interest_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -86,7 +87,22 @@ class _GroupChatPageState extends State<GroupChatPage> {
               title: "Near",
               isSelected: pageIndex == 1,
               color: buttonColor,
-              onTap: () => showCustomDialog(context),
+              onTap: () => showCustomDialog(
+                context,
+                DialogBoxWidget(
+                  title: "Location Required",
+                  des:
+                      "To access Nearby, please share your location by allowing it in profile",
+                  firstButton: "Ok",
+                  secondButton: "Cancel",
+                  firstOnTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  secondOnTap: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
             ),
           ];
   }
@@ -95,14 +111,18 @@ class _GroupChatPageState extends State<GroupChatPage> {
     return widget.user!.isLocationGiven
         ? [
             NearRoomsPage(
-              user: widget.user,
+              user: widget.user!,
             ),
-            const WorldRoomsPage()
+            WorldRoomsPage(
+              user: widget.user!,
+            )
           ]
         : [
-            const WorldRoomsPage(),
+            WorldRoomsPage(
+              user: widget.user!,
+            ),
             NearRoomsPage(
-              user: widget.user,
+              user: widget.user!,
             ),
           ];
   }
