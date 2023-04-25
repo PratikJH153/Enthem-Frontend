@@ -195,7 +195,7 @@ class _RoomSettingsState extends State<RoomSettings> {
             const SizedBox(
               height: 10,
             ),
-            widget.room.ownerID == widget.userID
+            widget.room.ownerID == widget.userID && !widget.room.isIntroduce!
                 ? Padding(
                     padding: const EdgeInsets.only(bottom: 20.0),
                     child: ElevatedButton.icon(

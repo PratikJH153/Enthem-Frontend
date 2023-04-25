@@ -225,6 +225,7 @@ class UserAPIProvider extends IUserService {
             .toSet()
             .toList()
             .map((e) => encrypt(e, dotenv.env["SECRET_KEY"]!))
+            .toList(),
       });
       debugData(data.toString(), filename);
       Response response = await _dio.get(

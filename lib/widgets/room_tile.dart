@@ -104,23 +104,25 @@ class RoomTileWidget extends StatelessWidget {
             const SizedBox(
               height: 5,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  timeago.format(room.createdAt).toString(),
-                  style: const TextStyle(
-                    color: Colors.white60,
+            room.isIntroduce!
+                ? const SizedBox()
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        timeago.format(room.createdAt).toString(),
+                        style: const TextStyle(
+                          color: Colors.white60,
+                        ),
+                      ),
+                      Text(
+                        "$distance miles",
+                        style: const TextStyle(
+                          color: Colors.white60,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                Text(
-                  room.isIntroduce! ? "" : "$distance miles",
-                  style: const TextStyle(
-                    color: Colors.white60,
-                  ),
-                ),
-              ],
-            ),
             const SizedBox(
               height: 10,
             ),
