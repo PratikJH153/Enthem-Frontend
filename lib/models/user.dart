@@ -1,5 +1,7 @@
 import 'package:enthem2frontend/interfaces/user.dart';
+import 'package:enthem2frontend/utils/encryption.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class UserModel extends Equatable {
   final String? id;
@@ -56,9 +58,11 @@ class UserModel extends Equatable {
 
   factory UserModel.fromJson(Map<String, dynamic> userData) {
     final UserModel user = UserModel(
-      id: userData["id"].toString(),
+      id: userData["id"] != null
+          ? decrypt(userData["id"].toString(), dotenv.env["SECRET_KEY"]!)
+          : null,
       username: userData["username"].toString().trim(),
-      email: userData["email"].toString(),
+      email: decrypt(userData["email"].toString(), dotenv.env["SECRET_KEY"]!),
       photoURL: userData["photoURL"].toString(),
       gender: userData["gender"],
       age: int.parse(userData["age"].toString()),
@@ -79,9 +83,9 @@ class UserModel extends Equatable {
 
   Map<String, dynamic> toJson() {
     final userMap = {
-      "id": id,
+      "id": encrypt(id!, dotenv.env["SECRET_KEY"]!),
       "username": username,
-      "email": email,
+      "email": encrypt(email!, dotenv.env["SECRET_KEY"]!),
       "photoURL": photoURL,
       "gender": gender,
       "age": age!.toInt(),

@@ -45,6 +45,16 @@ class RoomAPIRepository extends RoomContract {
   Future<bool> deleteRoom({required String roomID, required String ownerID}) {
     return _provider.deleteRoom(roomID: roomID, ownerID: ownerID);
   }
+
+  @override
+  Future<List<Room>> searchRooms({required String searchString}) {
+    return _provider.searchRooms(searchString: searchString);
+  }
+
+  @override
+  Future<Room> getIntroduceRoom() {
+    return _provider.getIntroduceRoom();
+  }
 }
 
 class NetworkError extends Error {}

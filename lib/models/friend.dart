@@ -10,6 +10,17 @@ class Friend {
   final double distance;
   final double compatible;
 
+  String get distanceText {
+    if (distance < 100) {
+      return "${distance.toStringAsFixed(2)} miles";
+    } else if (distance < 200) {
+      return "Not close";
+    } else if (distance < 300) {
+      return "Far away";
+    }
+    return "Very far away";
+  }
+
   Friend({
     this.id,
     required this.username,

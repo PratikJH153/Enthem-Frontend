@@ -6,7 +6,9 @@ import 'package:enthem2frontend/logic/contracts/user_contract.dart';
 import 'package:enthem2frontend/models/user.dart';
 import 'package:enthem2frontend/services/api_options.dart';
 import 'package:enthem2frontend/services/debug_console.dart';
+import 'package:enthem2frontend/utils/encryption.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class UserAPIProvider extends IUserService {
   final Dio _dio = Dio();
@@ -51,7 +53,7 @@ class UserAPIProvider extends IUserService {
   @override
   Future<bool> checkUserExists(String id) async {
     try {
-      final data = json.encode({"id": id});
+      final data = json.encode({"id": encrypt(id, dotenv.env["SECRET_KEY"]!)});
       debugData(data.toString(), filename);
       Response response = await _dio.get(
         "$_url/exists",
@@ -73,7 +75,7 @@ class UserAPIProvider extends IUserService {
   @override
   Future<UserModel> getUser(String id) async {
     try {
-      final data = json.encode({"id": id});
+      final data = json.encode({"id": encrypt(id, dotenv.env["SECRET_KEY"]!)});
       debugData(data.toString(), filename);
       Response response = await _dio.get(
         _url,
@@ -163,7 +165,10 @@ class UserAPIProvider extends IUserService {
   @override
   Future<bool> addInterests(String id, List<String> interests) async {
     try {
-      final data = json.encode({"id": id, "interests": interests});
+      final data = json.encode({
+        "id": encrypt(id, dotenv.env["SECRET_KEY"]!),
+        "interests": interests
+      });
       debugData(data.toString(), filename);
       Response response = await _dio.post(
         "$_url/interests",
@@ -185,7 +190,7 @@ class UserAPIProvider extends IUserService {
   @override
   Future<bool> checkInterestsAdded(String id) async {
     try {
-      final data = json.encode({"id": id});
+      final data = json.encode({"id": encrypt(id, dotenv.env["SECRET_KEY"]!)});
       debugData(data.toString(), filename);
       Response response = await _dio.get(
         "$_url/interests",
@@ -215,7 +220,12 @@ class UserAPIProvider extends IUserService {
   @override
   Future<List<UserModel>> getUsers(List<String> ids) async {
     try {
-      final data = json.encode({"id": ids});
+      final data = json.encode({
+        "id": ids
+            .toSet()
+            .toList()
+            .map((e) => encrypt(e, dotenv.env["SECRET_KEY"]!))
+      });
       debugData(data.toString(), filename);
       Response response = await _dio.get(
         "$_url/getUserByIds",

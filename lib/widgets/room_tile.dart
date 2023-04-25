@@ -2,8 +2,10 @@ import 'package:enthem2frontend/helper/error_constants.dart';
 import 'package:enthem2frontend/models/room.dart';
 import 'package:enthem2frontend/models/user.dart';
 import 'package:enthem2frontend/screens/room/chat_page.dart';
+import 'package:enthem2frontend/theme/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class RoomTileWidget extends StatelessWidget {
@@ -23,15 +25,17 @@ class RoomTileWidget extends StatelessWidget {
       padding: const EdgeInsets.only(
         left: 20,
         right: 20,
-        top: 20,
-        bottom: 10,
-      ),
-      margin: const EdgeInsets.only(
+        top: 15,
         bottom: 5,
       ),
-      decoration: const BoxDecoration(
-        color: Color.fromARGB(255, 37, 36, 37),
-        borderRadius: BorderRadius.all(Radius.circular(15)),
+      margin: const EdgeInsets.only(
+        top: 4,
+      ),
+      decoration: BoxDecoration(
+        color: room.isIntroduce!
+            ? primaryColor
+            : const Color.fromARGB(255, 37, 36, 37),
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
       ),
       child: InkWell(
         onTap: () {
@@ -54,14 +58,48 @@ class RoomTileWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              room.title,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontFamily: "Poppins",
-                fontSize: 17,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    room.title,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontFamily: "Poppins",
+                      fontSize: 17,
+                    ),
+                    softWrap: false,
+                  ),
+                ),
+                room.isIntroduce!
+                    ? Lottie.asset(
+                        "assets/images/crown.json",
+                        height: 50,
+                        width: 50,
+                        fit: BoxFit.cover,
+                      )
+                    : room.ownerID == user.id
+                        ? Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 5,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(5),
+                              ),
+                              color: Colors.teal.withOpacity(0.1),
+                            ),
+                            child: const Text(
+                              "Owner",
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.teal,
+                              ),
+                            ),
+                          )
+                        : const SizedBox(),
+              ],
             ),
             const SizedBox(
               height: 5,
@@ -76,7 +114,7 @@ class RoomTileWidget extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "$distance miles",
+                  room.isIntroduce! ? "" : "$distance miles",
                   style: const TextStyle(
                     color: Colors.white60,
                   ),

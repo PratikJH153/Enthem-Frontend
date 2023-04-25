@@ -30,16 +30,36 @@ class _WorldRoomsPageState extends State<WorldRoomsPage> {
     super.initState();
   }
 
+  Future<Room> getIntroduceRoom() async {
+    try {
+      final data = await _apiRepository.getIntroduceRoom();
+      data.isIntroduce = true;
+      return data;
+    } catch (err) {
+      debugError(err.toString(), filename);
+      showSnackBar(
+        context: context,
+        status: "failure",
+        title: "Server issue!",
+        des: "Couldn't connect to the server",
+      );
+
+      rethrow;
+    }
+  }
+
   Future<void> getRoomsList() async {
     try {
       setState(() {
         _isLoading = true;
       });
+      final introduceRoom = await getIntroduceRoom();
       final data = await _apiRepository.getPopularRooms(
         page: 1,
       );
       setState(() {
         roomsList = data;
+        roomsList.insert(0, introduceRoom);
         _isLoading = false;
       });
     } catch (err) {

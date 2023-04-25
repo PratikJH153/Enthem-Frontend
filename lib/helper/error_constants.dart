@@ -16,6 +16,7 @@ enum ErrorState {
   interestsNotAdded,
   workingFeature,
   deleteRoomError,
+  searchTitleRequired,
   otherError,
 }
 
@@ -92,6 +93,12 @@ ErrorModel getError(ErrorState error) {
       title: "Sorry, can't remove the room!",
       des: "Please try again later!",
       status: "failure",
+    );
+  } else if (error == ErrorState.searchTitleRequired) {
+    return ErrorModel(
+      title: "Title should be atleast 3 characters",
+      des: "",
+      status: "warning",
     );
   } else if (error == ErrorState.workingFeature) {
     return ErrorModel(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 const Color primaryColor = Color.fromARGB(255, 168, 131, 255);
+const Color accentColor = Color.fromARGB(255, 255, 91, 121);
 const Color darkColor = Color(0xFF131218);
 const Color buttonColor = Color.fromARGB(255, 233, 231, 130);
 const Color backgroundColor = Color(0xFF161516);

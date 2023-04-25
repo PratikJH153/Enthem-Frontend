@@ -4,6 +4,7 @@ import 'package:enthem2frontend/models/user.dart';
 import 'package:enthem2frontend/screens/room/near_rooms.dart';
 import 'package:enthem2frontend/screens/room/world_rooms.dart';
 import 'package:enthem2frontend/theme/theme.dart';
+import 'package:enthem2frontend/views/search_rooms_view.dart';
 import 'package:enthem2frontend/widgets/custom_dialog_box.dart';
 import 'package:enthem2frontend/widgets/dialog_box_widget.dart';
 import 'package:enthem2frontend/widgets/explore_interest_widget.dart';
@@ -135,94 +136,6 @@ class _GroupChatPageState extends State<GroupChatPage> {
           padding: kPagePadding.copyWith(),
           child: Column(
             children: [
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //   children: [
-              //     const Text(
-              //       "Explore interests",
-              //       style: TextStyle(
-              //         fontSize: 15,
-              //         fontWeight: FontWeight.bold,
-              //       ),
-              //     ),
-              //     TextButton(
-              //       onPressed: () {},
-              //       child: const Text(
-              //         "See All  >",
-              //         style: TextStyle(
-              //           fontSize: 15,
-              //           fontWeight: FontWeight.bold,
-              //         ),
-              //       ),
-              //     ),
-              //   ],
-              // ),
-              // SizedBox(
-              //   height: 36,
-              //   child: ListView.builder(
-              //     itemCount: exploreInterests.length,
-              //     scrollDirection: Axis.horizontal,
-              //     itemBuilder: (context, index) {
-              //       final interest = exploreInterests[index];
-              //       return Container(
-              //         margin: const EdgeInsets.only(
-              //           right: 8,
-              //         ),
-              //         child: ElevatedButton.icon(
-              //           style: ElevatedButton.styleFrom(
-              //             backgroundColor: Colors.white,
-              //           ),
-              //           onPressed: () {},
-              //           icon: Icon(
-              //             interest.iconData,
-              //             color: interest.color,
-              //             size: 20,
-              //           ),
-              //           label: Text(
-              //             interest.title,
-              //             style: const TextStyle(
-              //               color: Colors.black,
-              //               fontWeight: FontWeight.bold,
-              //               fontSize: 13,
-              //             ),
-              //           ),
-              //         ),
-              //       );
-              //     },
-              //   ),
-              // ),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.start,
-              //   children: [
-              //     Expanded(
-              //       child: ExploreInterestWidget(
-              //         iconData: Icons.celebration,
-              //         title: "New",
-              //         isSelected: true,
-              //         color: Colors.amber,
-              //         onTap: () {},
-              //       ),
-              //     ),
-              //     Expanded(
-              //       child: ExploreInterestWidget(
-              //         iconData: CupertinoIcons.flame_fill,
-              //         title: "Hot",
-              //         isSelected: false,
-              //         color: Colors.orange,
-              //         onTap: () {},
-              //       ),
-              //     ),
-              //     Expanded(
-              //       child: ExploreInterestWidget(
-              //         iconData: CupertinoIcons.globe,
-              //         title: "World",
-              //         isSelected: false,
-              //         color: Colors.blue,
-              //         onTap: () {},
-              //       ),
-              //     ),
-              //   ],
-              // ),
               const SizedBox(
                 height: 30,
               ),
@@ -234,7 +147,19 @@ class _GroupChatPageState extends State<GroupChatPage> {
                     children: roomPagesButton(),
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        elevation: 5,
+                        isScrollControlled: true,
+                        backgroundColor: backgroundColor,
+                        builder: (context) {
+                          return SearchRoomsView(
+                            user: widget.user!,
+                          );
+                        },
+                      );
+                    },
                     icon: const Icon(
                       CupertinoIcons.search,
                     ),

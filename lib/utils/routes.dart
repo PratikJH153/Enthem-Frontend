@@ -12,7 +12,7 @@ import 'package:enthem2frontend/screens/home/find_friends_screen.dart';
 import 'package:enthem2frontend/screens/home/home_screen.dart';
 import 'package:enthem2frontend/screens/home/messages_screen.dart';
 import 'package:enthem2frontend/screens/profile/profile_screen.dart';
-import 'package:enthem2frontend/screens/room/group_chat_screen.dart';
+import 'package:enthem2frontend/screens/home/group_chat_screen.dart';
 import 'package:flutter/material.dart';
 
 class Routes {
