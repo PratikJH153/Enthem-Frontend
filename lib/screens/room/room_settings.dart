@@ -11,17 +11,20 @@ import "package:enthem2frontend/widgets/dialog_box_widget.dart";
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class RoomSettings extends StatefulWidget {
   final Room room;
   final String distance;
   final String userID;
   final VoidCallback onTap;
+  final io.Socket socket;
   const RoomSettings({
     required this.room,
     required this.distance,
     required this.userID,
     required this.onTap,
+    required this.socket,
     super.key,
   });
 
@@ -42,7 +45,6 @@ class _RoomSettingsState extends State<RoomSettings> {
   }
 
   void getParticipants() async {
-    print(widget.room.participants);
     final data = await _userAPIRepository.getUsers(widget.room.participants!
         .map((e) => e["memberId"] != null ? e["memberId"] as String : "")
         .toList());
@@ -76,6 +78,24 @@ class _RoomSettingsState extends State<RoomSettings> {
         );
       }
     }
+  }
+
+  void removeMember(String participantID) async {
+    DialogBoxWidget(
+      title: "Remove member",
+      des: "Are you sure want to remove the member?",
+      firstButton: "Yes",
+      secondButton: "No",
+      firstOnTap: () {
+        Map<String, dynamic> data = {
+          "roomID": widget.room.id,
+          "memberID": participantID,
+        };
+        widget.socket.emit("removeMember", data);
+        Navigator.of(context).pop(true);
+      },
+      secondOnTap: () => Navigator.of(context).pop(),
+    );
   }
 
   @override
@@ -118,7 +138,7 @@ class _RoomSettingsState extends State<RoomSettings> {
             Text(
               widget.room.title,
               style: const TextStyle(
-                fontSize: 28,
+                fontSize: 26,
                 fontFamily: "Poppins",
               ),
             ),
@@ -148,9 +168,19 @@ class _RoomSettingsState extends State<RoomSettings> {
               child: ListView.builder(
                 itemCount: _participants.length,
                 itemBuilder: (context, index) {
+                  final participant = _participants[index];
                   return ChatParticipantTileWidget(
-                    participant: _participants[index],
+                    participant: participant,
                     ownerID: widget.room.ownerID,
+                    currentUserID: widget.userID,
+                    onTap: () {
+                      if (widget.userID == widget.room.ownerID &&
+                          participant.id != widget.userID) {
+                        removeMember(participant.id!);
+                      } else {
+                        return;
+                      }
+                    },
                   );
                 },
               ),
@@ -165,7 +195,7 @@ class _RoomSettingsState extends State<RoomSettings> {
             const SizedBox(
               height: 10,
             ),
-            widget.room.ownerID == widget.userID
+            widget.room.ownerID == widget.userID && !widget.room.isIntroduce!
                 ? Padding(
                     padding: const EdgeInsets.only(bottom: 20.0),
                     child: ElevatedButton.icon(
@@ -183,6 +213,7 @@ class _RoomSettingsState extends State<RoomSettings> {
                                 roomID: widget.room.id!,
                                 ownerID: widget.userID,
                               );
+                              widget.socket.emit("deleteRoom");
                               if (isDeleted) {
                                 if (context.mounted) {
                                   Navigator.of(context).pushNamedAndRemoveUntil(

@@ -1,13 +1,14 @@
+import 'package:enthem2frontend/widgets/primary_button.dart';
+
 import '/database/repositories/room_api_repository.dart';
 import '/logic/repositories/user_api_repository.dart';
 import '/models/room.dart';
 import '/models/user.dart';
 import '/screens/home/find_friends_screen.dart';
-import '/screens/room/group_chat_screen.dart';
+import 'group_chat_screen.dart';
 import '/screens/home/messages_screen.dart';
 import '/screens/profile/profile_screen.dart';
 import '/services/debug_console.dart';
-import '/theme/theme.dart';
 import '/widgets/bottom_nav_button.dart';
 import '/widgets/custom_snackbar.dart';
 import '/widgets/loading_widget.dart';
@@ -228,28 +229,10 @@ class _HomePageState extends State<HomePage> {
                               const SizedBox(
                                 width: 5,
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 10.0),
-                                child: IconButton(
-                                  style: IconButton.styleFrom(
-                                    iconSize: 20,
-                                    backgroundColor: buttonColor,
-                                    foregroundColor: Colors.black,
-                                    padding: const EdgeInsets.all(10),
-                                    shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(15),
-                                      ),
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    addRoom();
-                                  },
-                                  icon: const Icon(
-                                    CupertinoIcons.paperplane,
-                                  ),
-                                ),
-                              )
+                              PrimaryButton(
+                                icon: CupertinoIcons.paperplane,
+                                onTap: addRoom,
+                              ),
                             ],
                           )
                         : const SizedBox(),

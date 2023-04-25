@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 // ignore: must_be_immutable
 class Room extends Equatable {
   final String? id;
+  bool? isIntroduce;
   final String title;
   final String? des;
   final String ownerID;
@@ -13,6 +14,7 @@ class Room extends Equatable {
 
   Room({
     this.id,
+    this.isIntroduce = false,
     required this.title,
     this.des,
     required this.ownerID,
@@ -29,8 +31,13 @@ class Room extends Equatable {
 
   factory Room.fromJson(Map<String, dynamic> json) {
     final List<double> coordinates = [];
-    json["location"]["coordinates"]
-        .forEach((c) => coordinates.add(double.parse(c.toString())));
+    json["location"]["coordinates"].forEach(
+      (c) => coordinates.add(
+        double.parse(
+          c.toString(),
+        ),
+      ),
+    );
 
     final Room room = Room(
       id: json["_id"],

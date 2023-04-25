@@ -4,11 +4,14 @@ import 'package:enthem2frontend/models/room.dart';
 import 'package:enthem2frontend/models/user.dart';
 import 'package:enthem2frontend/screens/room/room_settings.dart';
 import 'package:enthem2frontend/services/debug_console.dart';
+import 'package:enthem2frontend/theme/theme.dart';
+import 'package:enthem2frontend/utils/encryption.dart';
 import 'package:enthem2frontend/widgets/dialog_box_widget.dart';
 import 'package:enthem2frontend/widgets/other_message_widget.dart';
 import 'package:enthem2frontend/widgets/own_message_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lottie/lottie.dart';
 import '../../widgets/custom_dialog_box.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -32,22 +35,109 @@ class _ChatPageState extends State<ChatPage> {
   late io.Socket? socket;
   final TextEditingController _messageController = TextEditingController();
   List<Message> messagesList = [];
+  bool isRemoved = false;
+  bool isGroupDeleted = false;
 
   @override
   void initState() {
     connect();
-    socket!.on("sendMsgServer", (msg) {
-      setState(() {
-        messagesList.add(
-          Message(
-            type: "msg",
-            msg: msg["content"],
-            sender: msg["sender"],
-            timestamp: DateTime.parse(msg["timestamp"]),
+    if (isRemoved) {
+      Navigator.of(context).pop(
+        showCustomDialog(
+          context,
+          DialogBoxWidget(
+            title: "Admin removed you",
+            des: "The admin has removed you from this group.",
+            firstButton: "Ok",
+            secondButton: "Cancel",
+            firstOnTap: () {
+              Navigator.of(context).pop();
+            },
+            secondOnTap: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ),
+      );
+    } else if (isGroupDeleted) {
+      Navigator.of(context).pop(
+        showCustomDialog(
+          context,
+          DialogBoxWidget(
+            title: "Room closed",
+            des: "The admin has deleted the room.",
+            firstButton: "Ok",
+            secondButton: "Cancel",
+            firstOnTap: () {
+              Navigator.of(context).pop();
+            },
+            secondOnTap: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ),
+      );
+    } else {
+      socket!.on("sendMsgServer", (msg) {
+        setState(() {
+          messagesList.add(
+            Message(
+              type: "msg",
+              msg: decrypt(msg["content"], dotenv.env["SECRET_KEY"]!),
+              sender: decrypt(msg["sender"], dotenv.env["SECRET_KEY"]!),
+              timestamp: DateTime.parse(msg["timestamp"]),
+            ),
+          );
+        });
+      });
+      socket!.on("groupDeleted", (msg) {
+        setState(() {
+          isGroupDeleted = true;
+        });
+        Navigator.of(context).pop(
+          showCustomDialog(
+            context,
+            DialogBoxWidget(
+              title: "Room closed",
+              des: "The admin has deleted the room.",
+              firstButton: "Ok",
+              secondButton: "Cancel",
+              firstOnTap: () {
+                Navigator.of(context).pop();
+              },
+              secondOnTap: () {
+                Navigator.of(context).pop();
+              },
+            ),
           ),
         );
       });
-    });
+      socket!.on("userRemoved", (msg) {
+        if (msg["memberID"] == widget.user!.id) {
+          setState(() {
+            isRemoved = true;
+          });
+          Navigator.of(context).pop(
+            showCustomDialog(
+              context,
+              DialogBoxWidget(
+                title: "Admin removed you",
+                des: "The admin has removed you from this group.",
+                firstButton: "Ok",
+                secondButton: "Cancel",
+                firstOnTap: () {
+                  Navigator.of(context).pop();
+                },
+                secondOnTap: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
+          );
+        }
+      });
+    }
+
     super.initState();
   }
 
@@ -67,18 +157,6 @@ class _ChatPageState extends State<ChatPage> {
           "id": widget.room.id,
           "memberID": widget.user!.id,
         });
-        socket!.on("sendMsgServer", (msg) {
-          setState(() {
-            messagesList.add(
-              Message(
-                type: "msg",
-                msg: msg["content"],
-                sender: msg["sender"],
-                timestamp: DateTime.parse(msg["timestamp"]),
-              ),
-            );
-          });
-        });
       });
     } catch (err) {
       debugError(err.toString(), "chat_page.dart");
@@ -92,6 +170,7 @@ class _ChatPageState extends State<ChatPage> {
     socket!.close();
     socket!.destroy();
     socket!.dispose();
+    _messageController.dispose();
     super.dispose();
   }
 
@@ -111,9 +190,9 @@ class _ChatPageState extends State<ChatPage> {
     socket!.emit(
       "sendMsg",
       {
-        'content': msg,
-        'senderChatID': sender,
-        'receiverChatID': widget.room.id!,
+        'content': encrypt(msg, dotenv.env["SECRET_KEY"]!),
+        'sender': encrypt(sender, dotenv.env["SECRET_KEY"]!),
+        'receiverChatID': encrypt(widget.room.id!, dotenv.env["SECRET_KEY"]!),
         "timestamp": DateTime.now().toString(),
       },
     );
@@ -169,6 +248,7 @@ class _ChatPageState extends State<ChatPage> {
                           room: widget.room,
                           distance: widget.distance,
                           userID: widget.user!.id!,
+                          socket: socket!,
                           onTap: () {
                             Map<String, dynamic> data = {
                               "roomID": widget.room.id,
@@ -222,7 +302,7 @@ class _ChatPageState extends State<ChatPage> {
             image: const AssetImage("assets/images/chatscreen.png"),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
-              Colors.black.withOpacity(0.8),
+              backgroundColor.withOpacity(0.9),
               BlendMode.darken,
             ),
           ),
@@ -240,6 +320,8 @@ class _ChatPageState extends State<ChatPage> {
                           children: [
                             Lottie.asset(
                               "assets/images/cat_chat.json",
+                              height: 180,
+                              width: 180,
                               fit: BoxFit.cover,
                             ),
                             const Text(

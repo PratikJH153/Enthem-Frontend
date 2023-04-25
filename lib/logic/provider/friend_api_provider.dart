@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:enthem2frontend/utils/encryption.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '/constants/constants.dart';
 import '/models/friend.dart';
 import '/services/api_options.dart';
@@ -15,7 +17,7 @@ class FriendAPIProvider extends FriendContract {
   @override
   Future<List<Friend>> nearby(String userID, int offset) async {
     try {
-      final jsonData = {"id": userID};
+      final jsonData = {"id": encrypt(userID, dotenv.env["SECRET_KEY"]!)};
       Response response = await _dio.get(
         "$_url/nearby",
         data: json.encode(jsonData),
@@ -39,7 +41,7 @@ class FriendAPIProvider extends FriendContract {
   @override
   Future<List<Friend>> foryou(String userID, int offset) async {
     try {
-      final jsonData = {"id": userID};
+      final jsonData = {"id": encrypt(userID, dotenv.env["SECRET_KEY"]!)};
       Response response = await _dio.get(
         "$_url/foryou",
         data: json.encode(jsonData),

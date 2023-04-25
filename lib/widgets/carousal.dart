@@ -102,7 +102,7 @@ Widget carouselCard(
                         ),
                         showMiles
                             ? Text(
-                                "${data.distance.toStringAsFixed(2)} mil",
+                                data.distanceText,
                                 style: const TextStyle(
                                   color: Colors.white60,
                                   fontSize: 14,
