@@ -33,12 +33,9 @@ class _GenderPageState extends State<GenderPage> {
   void navigateToInterestsPage({bool selectedNull = false}) {
     widget.userInterface.gender = selectedNull ? null : selected.name;
     debugData(widget.userInterface.toString(), filename);
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => GeoLocationPage(
-          userInterface: widget.userInterface,
-        ),
-      ),
+    Navigator.of(context).pushNamed(
+      GeoLocationPage.routeID,
+      arguments: widget.userInterface,
     );
   }
 

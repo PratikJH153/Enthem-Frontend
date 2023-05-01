@@ -30,9 +30,9 @@ class DialogBoxWidget extends StatelessWidget {
             horizontal: 20,
           ),
           width: double.infinity,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: primaryColor,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.all(Radius.circular(20)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,

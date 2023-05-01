@@ -2,6 +2,7 @@ import 'package:enthem2frontend/constants/constants.dart';
 import 'package:enthem2frontend/models/message.dart';
 import 'package:enthem2frontend/models/room.dart';
 import 'package:enthem2frontend/models/user.dart';
+import 'package:enthem2frontend/screens/home/home_screen.dart';
 import 'package:enthem2frontend/screens/room/room_settings.dart';
 import 'package:enthem2frontend/services/debug_console.dart';
 import 'package:enthem2frontend/theme/theme.dart';
@@ -42,102 +43,12 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     connect();
     if (isRemoved) {
-      Navigator.of(context).pop(
-        showCustomDialog(
-          context,
-          DialogBoxWidget(
-            title: "Admin removed you",
-            des: "The admin has removed you from this group.",
-            firstButton: "Ok",
-            secondButton: "Cancel",
-            firstOnTap: () {
-              Navigator.of(context).pop();
-            },
-            secondOnTap: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ),
-      );
+      popUpForUserRemoved(context);
     } else if (isGroupDeleted) {
-      Navigator.of(context).pop(
-        showCustomDialog(
-          context,
-          DialogBoxWidget(
-            title: "Room closed",
-            des: "The admin has deleted the room.",
-            firstButton: "Ok",
-            secondButton: "Cancel",
-            firstOnTap: () {
-              Navigator.of(context).pop();
-            },
-            secondOnTap: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ),
-      );
+      popUpForGroupDeleted(context);
     } else {
-      socket!.on("sendMsgServer", (msg) {
-        setState(() {
-          messagesList.add(
-            Message(
-              type: "msg",
-              msg: decrypt(msg["content"], dotenv.env["SECRET_KEY"]!),
-              sender: decrypt(msg["sender"], dotenv.env["SECRET_KEY"]!),
-              timestamp: DateTime.parse(msg["timestamp"]),
-            ),
-          );
-        });
-      });
-      socket!.on("groupDeleted", (msg) {
-        setState(() {
-          isGroupDeleted = true;
-        });
-        Navigator.of(context).pop(
-          showCustomDialog(
-            context,
-            DialogBoxWidget(
-              title: "Room closed",
-              des: "The admin has deleted the room.",
-              firstButton: "Ok",
-              secondButton: "Cancel",
-              firstOnTap: () {
-                Navigator.of(context).pop();
-              },
-              secondOnTap: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ),
-        );
-      });
-      socket!.on("userRemoved", (msg) {
-        if (msg["memberID"] == widget.user!.id) {
-          setState(() {
-            isRemoved = true;
-          });
-          Navigator.of(context).pop(
-            showCustomDialog(
-              context,
-              DialogBoxWidget(
-                title: "Admin removed you",
-                des: "The admin has removed you from this group.",
-                firstButton: "Ok",
-                secondButton: "Cancel",
-                firstOnTap: () {
-                  Navigator.of(context).pop();
-                },
-                secondOnTap: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ),
-          );
-        }
-      });
+      checkSockets();
     }
-
     super.initState();
   }
 
@@ -162,6 +73,59 @@ class _ChatPageState extends State<ChatPage> {
       debugError(err.toString(), "chat_page.dart");
       rethrow;
     }
+  }
+
+  void checkSockets() {
+    socket!.on("sendMsgServer", (msg) {
+      setState(() {
+        messagesList.add(
+          Message(
+            type: "msg",
+            msg: decrypt(msg["content"], dotenv.env["SECRET_KEY"]!),
+            sender: decrypt(msg["sender"], dotenv.env["SECRET_KEY"]!),
+            timestamp: DateTime.parse(msg["timestamp"]),
+          ),
+        );
+      });
+    });
+    socket!.on("groupDeleted", (data) {
+      setState(() {
+        isGroupDeleted = true;
+      });
+      popUpForGroupDeleted(context);
+    });
+    socket!.on("userRemoved", (data) {
+      setState(() {
+        widget.room.participants!.removeWhere((element) {
+          return element["memberId"] == data["memberId"];
+        });
+      });
+      if (data["memberId"] == widget.user!.id) {
+        setState(() {
+          isRemoved = true;
+        });
+        popUpForUserRemoved(context);
+      }
+    });
+    socket!.on("bye", (data) {
+      setState(() {
+        widget.room.participants!.removeWhere((element) {
+          return element["memberId"] == data["memberId"];
+        });
+      });
+    });
+    socket!.on("userJoinedRoom", (data) {
+      if (data["memberId"] != widget.user!.id) {
+        setState(() {
+          widget.room.participants!.add(
+            {
+              "memberId": data["memberId"],
+              "permit": false,
+            },
+          );
+        });
+      }
+    });
   }
 
   @override
@@ -202,7 +166,10 @@ class _ChatPageState extends State<ChatPage> {
     bool canPop = await _onWillPop();
     if (canPop) {
       if (context.mounted) {
-        Navigator.of(context).pop();
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          HomePage.routeID,
+          (route) => false,
+        );
       }
     }
   }
@@ -215,219 +182,299 @@ class _ChatPageState extends State<ChatPage> {
         des: "Are you sure want to leave the room? We need you to stay!",
         firstButton: "Stay",
         secondButton: "Leave",
-        firstOnTap: () => Navigator.of(context).pop(false),
+        firstOnTap: () => Navigator.of(context).pushNamedAndRemoveUntil(
+          HomePage.routeID,
+          (route) => false,
+        ),
         secondOnTap: () {
           Map<String, dynamic> data = {
             "roomID": widget.room.id,
             "memberID": widget.user!.id
           };
           socket!.emit("removeMember", data);
-          Navigator.of(context).pop(true);
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            HomePage.routeID,
+            (route) => false,
+          );
         },
       ),
     );
     return shouldPop;
   }
 
+  void popUpForUserRemoved(BuildContext context) {
+    showCustomDialog(
+      context,
+      DialogBoxWidget(
+        title: "Admin removed you",
+        des: "The admin has removed you from this group.",
+        firstButton: "Ok",
+        secondButton: "Cancel",
+        firstOnTap: () {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            HomePage.routeID,
+            (route) => false,
+          );
+        },
+        secondOnTap: () {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            HomePage.routeID,
+            (route) => false,
+          );
+        },
+      ),
+    ).then(
+      (value) => Navigator.of(context).pushNamedAndRemoveUntil(
+        HomePage.routeID,
+        (route) => false,
+      ),
+    );
+  }
+
+  void popUpForGroupDeleted(BuildContext context) {
+    showCustomDialog(
+      context,
+      DialogBoxWidget(
+        title: "Room closed",
+        des: "The admin has deleted the room.",
+        firstButton: "Ok",
+        secondButton: "Cancel",
+        firstOnTap: () {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            HomePage.routeID,
+            (route) => false,
+          );
+        },
+        secondOnTap: () {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            HomePage.routeID,
+            (route) => false,
+          );
+        },
+      ),
+    ).then(
+      (value) => Navigator.of(context).pushNamedAndRemoveUntil(
+        HomePage.routeID,
+        (route) => false,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: SizedBox(
-          width: double.infinity,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => RoomSettings(
-                          room: widget.room,
-                          distance: widget.distance,
-                          userID: widget.user!.id!,
-                          socket: socket!,
-                          onTap: () {
-                            Map<String, dynamic> data = {
-                              "roomID": widget.room.id,
-                              "memberID": widget.user!.id
-                            };
-                            socket!.emit("removeMember", data);
-                            Navigator.of(context).pop(true);
-                          },
+    return WillPopScope(
+      onWillPop: () async {
+        if (isRemoved || isGroupDeleted) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            HomePage.routeID,
+            (route) => false,
+          );
+        } else {
+          leaveRoom();
+        }
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: SizedBox(
+            width: double.infinity,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => RoomSettings(
+                            room: widget.room,
+                            distance: widget.distance,
+                            userID: widget.user!.id!,
+                            socket: socket!,
+                            onTap: () {
+                              Map<String, dynamic> data = {
+                                "roomID": widget.room.id,
+                                "memberID": widget.user!.id
+                              };
+                              socket!.emit("adminRemoved", data);
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                HomePage.routeID,
+                                (route) => false,
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                    );
-                    // errorSnackBar(
-                    //   context: context,
-                    //   error: ErrorState.workingFeature,
-                    // );
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        widget.room.title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontFamily: "Exo2"),
-                      ),
-                      const Text(
-                        "Tap for group info",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 12,
+                      );
+                      // errorSnackBar(
+                      //   context: context,
+                      //   error: ErrorState.workingFeature,
+                      // );
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          widget.room.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontFamily: "Exo2"),
                         ),
-                      ),
-                    ],
+                        const Text(
+                          "Tap for group info",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              ElevatedButton.icon(
-                onPressed: leaveRoom,
-                icon: const Icon(Icons.waving_hand_rounded),
-                label: const Text("Leave"),
-              )
-            ],
-          ),
-        ),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: const AssetImage("assets/images/chatscreen.png"),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-              backgroundColor.withOpacity(0.9),
-              BlendMode.darken,
+                ElevatedButton.icon(
+                  onPressed: leaveRoom,
+                  icon: const Icon(Icons.waving_hand_rounded),
+                  label: const Text("Leave"),
+                )
+              ],
             ),
           ),
         ),
-        child: WillPopScope(
-          onWillPop: _onWillPop,
-          child: Column(
-            children: [
-              messagesList.isEmpty
-                  ? Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Lottie.asset(
-                              "assets/images/cat_chat.json",
-                              height: 180,
-                              width: 180,
-                              fit: BoxFit.cover,
-                            ),
-                            const Text(
-                              "Start your conversation, \nBy saying 👋 to the group",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontFamily: "Poppins",
-                                fontSize: 20,
+        body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: const AssetImage("assets/images/chatscreen.png"),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(
+                backgroundColor.withOpacity(0.9),
+                BlendMode.darken,
+              ),
+            ),
+          ),
+          child: WillPopScope(
+            onWillPop: _onWillPop,
+            child: Column(
+              children: [
+                messagesList.isEmpty
+                    ? Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Lottie.asset(
+                                "assets/images/cat_chat.json",
+                                height: 180,
+                                width: 180,
+                                fit: BoxFit.cover,
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  : Expanded(
-                      child: ListView.builder(
-                        itemCount: messagesList.length,
-                        reverse: true,
-                        itemBuilder: ((context, index) {
-                          final messages = messagesList.reversed.toList();
-                          return messages[index].type == "ownMsg"
-                              ? OwnMessageWidget(
-                                  msg: messages[index].msg,
-                                  sender: messages[index].sender,
-                                  timestamp: messages[index].timestamp,
-                                )
-                              : OtherMessageWidget(
-                                  msg: messages[index].msg,
-                                  sender: messages[index].sender,
-                                  timestamp: messages[index].timestamp,
-                                );
-                        }),
-                      ),
-                    ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8.0,
-                  vertical: 12,
-                ),
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Color.fromARGB(255, 37, 37, 37),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(15),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _messageController,
-                          decoration: const InputDecoration(
-                            hintText: "Send a message...",
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 15,
-                              vertical: 18,
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(15)),
-                            ),
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.emoji_emotions_sharp,
-                          size: 30,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 10.0),
-                        child: IconButton(
-                          style: IconButton.styleFrom(
-                            iconSize: 20,
-                            backgroundColor:
-                                const Color.fromARGB(255, 233, 231, 130),
-                            foregroundColor: Colors.black,
-                            padding: const EdgeInsets.all(10),
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(15),
+                              const Text(
+                                "Start your conversation, \nBy saying 👋 to the group",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: "Poppins",
+                                  fontSize: 20,
+                                ),
                               ),
-                            ),
-                          ),
-                          onPressed: () {
-                            if (_messageController.text.trim().isNotEmpty) {
-                              sendMessage(
-                                _messageController.text,
-                                widget.user!.username!,
-                              );
-                              _messageController.clear();
-                            }
-                          },
-                          icon: const Icon(
-                            CupertinoIcons.location,
+                            ],
                           ),
                         ),
                       )
-                    ],
+                    : Expanded(
+                        child: ListView.builder(
+                          itemCount: messagesList.length,
+                          reverse: true,
+                          itemBuilder: ((context, index) {
+                            final messages = messagesList.reversed.toList();
+                            return messages[index].type == "ownMsg"
+                                ? OwnMessageWidget(
+                                    msg: messages[index].msg,
+                                    sender: messages[index].sender,
+                                    timestamp: messages[index].timestamp,
+                                  )
+                                : OtherMessageWidget(
+                                    msg: messages[index].msg,
+                                    sender: messages[index].sender,
+                                    timestamp: messages[index].timestamp,
+                                  );
+                          }),
+                        ),
+                      ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 12,
                   ),
-                ),
-              )
-            ],
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 37, 37, 37),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(15),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _messageController,
+                            decoration: const InputDecoration(
+                              hintText: "Send a message...",
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 15,
+                                vertical: 18,
+                              ),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15)),
+                              ),
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.emoji_emotions_sharp,
+                            size: 30,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10.0),
+                          child: IconButton(
+                            style: IconButton.styleFrom(
+                              iconSize: 20,
+                              backgroundColor:
+                                  const Color.fromARGB(255, 233, 231, 130),
+                              foregroundColor: Colors.black,
+                              padding: const EdgeInsets.all(10),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(15),
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              if (_messageController.text.trim().isNotEmpty) {
+                                sendMessage(
+                                  _messageController.text,
+                                  widget.user!.username!,
+                                );
+                                _messageController.clear();
+                              }
+                            },
+                            icon: const Icon(
+                              CupertinoIcons.location,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),

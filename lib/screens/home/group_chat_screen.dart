@@ -1,6 +1,7 @@
 import 'package:enthem2frontend/constants/page_padding.dart';
 import 'package:enthem2frontend/models/room.dart';
 import 'package:enthem2frontend/models/user.dart';
+import 'package:enthem2frontend/screens/home/home_screen.dart';
 import 'package:enthem2frontend/screens/room/near_rooms.dart';
 import 'package:enthem2frontend/screens/room/world_rooms.dart';
 import 'package:enthem2frontend/theme/theme.dart';
@@ -97,10 +98,10 @@ class _GroupChatPageState extends State<GroupChatPage> {
                   firstButton: "Ok",
                   secondButton: "Cancel",
                   firstOnTap: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(true);
                   },
                   secondOnTap: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(false);
                   },
                 ),
               ),
@@ -130,51 +131,58 @@ class _GroupChatPageState extends State<GroupChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: kPagePadding.copyWith(),
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 30,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: roomPagesButton(),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        elevation: 5,
-                        isScrollControlled: true,
-                        backgroundColor: backgroundColor,
-                        builder: (context) {
-                          return SearchRoomsView(
-                            user: widget.user!,
-                          );
-                        },
-                      );
-                    },
-                    icon: const Icon(
-                      CupertinoIcons.search,
-                    ),
-                  ),
-                ],
-              ),
-              Expanded(
-                child: PageView(
-                  controller: _pageController,
-                  allowImplicitScrolling: false,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: roomPages(),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil(HomePage.routeID, (route) => false);
+        return false;
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Padding(
+            padding: kPagePadding.copyWith(),
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 30,
                 ),
-              ),
-            ],
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: roomPagesButton(),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          elevation: 5,
+                          isScrollControlled: true,
+                          backgroundColor: backgroundColor,
+                          builder: (context) {
+                            return SearchRoomsView(
+                              user: widget.user!,
+                            );
+                          },
+                        );
+                      },
+                      icon: const Icon(
+                        CupertinoIcons.search,
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: PageView(
+                    controller: _pageController,
+                    allowImplicitScrolling: false,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: roomPages(),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

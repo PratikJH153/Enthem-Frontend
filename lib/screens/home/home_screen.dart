@@ -1,3 +1,5 @@
+import 'package:enthem2frontend/helper/error_constants.dart';
+import 'package:enthem2frontend/utils/loading_delay.dart';
 import 'package:enthem2frontend/widgets/primary_button.dart';
 
 import '/database/repositories/room_api_repository.dart';
@@ -60,20 +62,16 @@ class _HomePageState extends State<HomePage> {
         }
       } catch (err) {
         debugError(err.toString(), filename);
-        showSnackBar(
+        errorSnackBar(
           context: context,
-          status: "failure",
-          title: "Server issue!",
-          des: "Couldn't connect to the server",
+          error: ErrorState.serverError,
         );
       }
     } else {
       if (context.mounted) {
-        showSnackBar(
+        errorSnackBar(
           context: context,
-          status: "warning",
-          title: "Title is required!",
-          des: "Please try again",
+          error: ErrorState.createRoomTitleRequired,
         );
       }
     }
@@ -83,6 +81,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _isLoading = true;
     });
+
     try {
       final data = await _apiRepository.getUser(_apiRepository.getUserID());
       setState(() {

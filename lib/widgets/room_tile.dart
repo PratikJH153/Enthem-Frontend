@@ -32,11 +32,18 @@ class RoomTileWidget extends StatelessWidget {
         top: 4,
       ),
       decoration: BoxDecoration(
-        color: room.isIntroduce!
-            ? primaryColor
-            : const Color.fromARGB(255, 37, 36, 37),
-        borderRadius: const BorderRadius.all(Radius.circular(20)),
-      ),
+          color: const Color.fromARGB(255, 37, 36, 37),
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
+          gradient: room.isIntroduce!
+              ? const LinearGradient(
+                  colors: [
+                    primaryColor,
+                    Color(0xFF5043b0),
+                  ],
+                  begin: Alignment.bottomLeft,
+                  end: Alignment.topRight,
+                )
+              : null),
       child: InkWell(
         onTap: () {
           if (!room.participants!.contains((e) => e["memberId"])) {

@@ -81,20 +81,23 @@ class _RoomSettingsState extends State<RoomSettings> {
   }
 
   void removeMember(String participantID) async {
-    DialogBoxWidget(
-      title: "Remove member",
-      des: "Are you sure want to remove the member?",
-      firstButton: "Yes",
-      secondButton: "No",
-      firstOnTap: () {
-        Map<String, dynamic> data = {
-          "roomID": widget.room.id,
-          "memberID": participantID,
-        };
-        widget.socket.emit("removeMember", data);
-        Navigator.of(context).pop(true);
-      },
-      secondOnTap: () => Navigator.of(context).pop(),
+    showCustomDialog(
+      context,
+      DialogBoxWidget(
+        title: "Remove member",
+        des: "Are you sure want to remove the member?",
+        firstButton: "Yes",
+        secondButton: "No",
+        firstOnTap: () {
+          Map<String, dynamic> data = {
+            "roomID": widget.room.id,
+            "memberID": participantID,
+          };
+          widget.socket.emit("adminRemoved", data);
+          Navigator.of(context).pop(true);
+        },
+        secondOnTap: () => Navigator.of(context).pop(false),
+      ),
     );
   }
 
@@ -114,27 +117,6 @@ class _RoomSettingsState extends State<RoomSettings> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Container(
-            //   padding: const EdgeInsets.symmetric(
-            //     horizontal: 25,
-            //     vertical: 15,
-            //   ),
-            //   margin: const EdgeInsets.only(
-            //     bottom: 10,
-            //     top: 10,
-            //   ),
-            //   decoration: const BoxDecoration(
-            //     color: Color.fromARGB(255, 37, 36, 37),
-            //     borderRadius: BorderRadius.all(Radius.circular(20)),
-            //   ),
-            //   child: Text(
-            //     widget.room.title.toString()[0].toUpperCase(),
-            //     style: const TextStyle(
-            //       fontSize: 24,
-            //       fontFamily: "Poppins",
-            //     ),
-            //   ),
-            // ),
             Text(
               widget.room.title,
               style: const TextStyle(
@@ -155,7 +137,7 @@ class _RoomSettingsState extends State<RoomSettings> {
               height: 10,
             ),
             Text(
-              "${widget.room.participants!.length} Participants",
+              "${widget.room.participants!.toSet().length} Participants",
               style: const TextStyle(
                 fontSize: 14.0,
                 color: Colors.white54,
@@ -213,7 +195,8 @@ class _RoomSettingsState extends State<RoomSettings> {
                                 roomID: widget.room.id!,
                                 ownerID: widget.userID,
                               );
-                              widget.socket.emit("deleteRoom");
+                              widget.socket.emit(
+                                  "deleteRoom", {"roomID": widget.room.id!});
                               if (isDeleted) {
                                 if (context.mounted) {
                                   Navigator.of(context).pushNamedAndRemoveUntil(
@@ -231,7 +214,7 @@ class _RoomSettingsState extends State<RoomSettings> {
                               }
                             },
                             secondOnTap: () {
-                              Navigator.of(context).pop();
+                              Navigator.of(context).pop(false);
                             },
                           ),
                         );

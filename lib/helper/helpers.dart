@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 String? validateName(String? value) {
-  String pattern = r'(^[a-zA-Z ]*$)';
+  String pattern = r'(^[a-zA-Z0-9 ]*$)';
   RegExp regExp = RegExp(pattern);
   if (value?.isEmpty ?? true) {
     return "Name is required";

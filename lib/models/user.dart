@@ -83,9 +83,9 @@ class UserModel extends Equatable {
 
   Map<String, dynamic> toJson() {
     final userMap = {
-      "id": encrypt(id!, dotenv.env["SECRET_KEY"]!),
+      "id": id!,
       "username": username,
-      "email": encrypt(email!, dotenv.env["SECRET_KEY"]!),
+      "email": email!,
       "photoURL": photoURL,
       "gender": gender,
       "age": age!.toInt(),

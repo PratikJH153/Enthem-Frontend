@@ -116,7 +116,7 @@ class _SearchRoomsViewState extends State<SearchRoomsView> {
                         border: InputBorder.none,
                       ),
                       validator: (val) {
-                        if (_searchController.text.trim().isEmpty &&
+                        if (_searchController.text.trim().isEmpty ||
                             _searchController.text.length < 3) {
                           return "Title should be atleast 3 characters";
                         }

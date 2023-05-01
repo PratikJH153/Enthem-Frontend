@@ -80,10 +80,8 @@ class _GeoLocationPageState extends State<GeoLocationPage> {
       //     await _apiRepository.registerUserSQL(userModel);
       if (context.mounted) {
         if (isUserRegistered == 200) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (context) => const InterestsPage(),
-            ),
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            InterestsPage.routeID,
             (route) => false,
           );
         } else if (isUserRegistered == 409) {
@@ -92,10 +90,8 @@ class _GeoLocationPageState extends State<GeoLocationPage> {
               const Duration(
                 seconds: 1,
               ), () {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                builder: (context) => const HomePage(),
-              ),
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              HomePage.routeID,
               (route) => false,
             );
           });
@@ -118,7 +114,7 @@ class _GeoLocationPageState extends State<GeoLocationPage> {
         backgroundColor: Colors.transparent,
         actions: [
           TextButton(
-            onPressed: registerUser,
+            onPressed: navigateToHomePage,
             child: const Text("Skip"),
           ),
         ],
@@ -153,7 +149,7 @@ class _GeoLocationPageState extends State<GeoLocationPage> {
                   ? _getCurrentPosition()
                   : Future.delayed(
                       const Duration(milliseconds: 200),
-                      registerUser,
+                      navigateToHomePage,
                     ),
               child: Container(
                 width: double.infinity,

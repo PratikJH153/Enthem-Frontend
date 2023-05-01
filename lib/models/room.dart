@@ -2,14 +2,14 @@ import 'package:equatable/equatable.dart';
 
 // ignore: must_be_immutable
 class Room extends Equatable {
-  final String? id;
+  String? id;
   bool? isIntroduce;
   final String title;
-  final String? des;
+  String? des;
   final String ownerID;
   final DateTime createdAt;
   final List<double> coordinates;
-  final int? votes;
+  int? votes;
   List<dynamic>? participants;
 
   Room({

@@ -1,5 +1,6 @@
 import 'package:enthem2frontend/logic/bloc/friend/for_you_state.dart';
 import 'package:enthem2frontend/models/friend.dart';
+import 'package:enthem2frontend/utils/loading_delay.dart';
 
 import '/logic/repositories/user_api_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,12 +16,14 @@ class ForYouBloc extends Cubit<ForYouState> {
   }
 
   Future<void> fetchFriends(String userId, int offset) async {
-    try {
-      List<Friend> friendList = await _provider.foryou(userId, offset);
+    loadingDelay(() async {
+      try {
+        List<Friend> friendList = await _provider.foryou(userId, offset);
 
-      emit(ForYouFetchedState(friendList));
-    } catch (e) {
-      emit(ForYouFailedState(e));
-    }
+        emit(ForYouFetchedState(friendList));
+      } catch (e) {
+        emit(ForYouFailedState(e));
+      }
+    });
   }
 }

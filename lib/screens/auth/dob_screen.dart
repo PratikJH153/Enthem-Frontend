@@ -48,12 +48,9 @@ class _DOBPageState extends State<DOBPage> {
         if (age > 14 && age < 100) {
           widget.userInterface.age = age;
           debugData(widget.userInterface.toString(), filename);
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => GenderPage(
-                userInterface: widget.userInterface,
-              ),
-            ),
+          Navigator.of(context).pushNamed(
+            GenderPage.routeID,
+            arguments: widget.userInterface,
           );
         } else {
           errorSnackBar(context: context, error: ErrorState.ageProblem);
