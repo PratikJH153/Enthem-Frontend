@@ -25,7 +25,6 @@ class SliderViewRecommendationNear extends StatefulWidget {
 class _SliderViewRecommendationNearState
     extends State<SliderViewRecommendationNear> {
   late final PageController _pageController;
-  static const String filename = "slider_view_recommendation.dart";
 
   @override
   void initState() {

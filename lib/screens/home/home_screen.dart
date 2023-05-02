@@ -1,5 +1,4 @@
 import 'package:enthem2frontend/helper/error_constants.dart';
-import 'package:enthem2frontend/utils/loading_delay.dart';
 import 'package:enthem2frontend/widgets/primary_button.dart';
 
 import '/database/repositories/room_api_repository.dart';

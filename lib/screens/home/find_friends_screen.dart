@@ -23,8 +23,6 @@ class FindFriendsPage extends StatefulWidget {
 }
 
 class _FindFriendsPageState extends State<FindFriendsPage> {
-  static const String filename = "find_friends_screen.dart";
-
   late final PageController _pageController;
   int pageIndex = 0;
 

@@ -88,7 +88,7 @@ class _GeoLocationPageState extends State<GeoLocationPage> {
           errorSnackBar(context: context, error: ErrorState.userExists);
           Future.delayed(
               const Duration(
-                seconds: 1,
+                milliseconds: 500,
               ), () {
             Navigator.of(context).pushNamedAndRemoveUntil(
               HomePage.routeID,

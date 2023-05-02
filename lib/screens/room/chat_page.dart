@@ -34,6 +34,7 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   late io.Socket? socket;
+
   final TextEditingController _messageController = TextEditingController();
   List<Message> messagesList = [];
   bool isRemoved = false;
@@ -67,6 +68,7 @@ class _ChatPageState extends State<ChatPage> {
         socket!.emit("joinRoom", {
           "id": widget.room.id,
           "memberID": widget.user!.id,
+          "username": widget.user!.username,
         });
       });
     } catch (err) {
@@ -99,6 +101,14 @@ class _ChatPageState extends State<ChatPage> {
         widget.room.participants!.removeWhere((element) {
           return element["memberId"] == data["memberId"];
         });
+        messagesList.add(
+          Message(
+            type: "left",
+            msg: "left",
+            sender: data["username"],
+            timestamp: DateTime.now(),
+          ),
+        );
       });
       if (data["memberId"] == widget.user!.id) {
         setState(() {
@@ -112,6 +122,14 @@ class _ChatPageState extends State<ChatPage> {
         widget.room.participants!.removeWhere((element) {
           return element["memberId"] == data["memberId"];
         });
+        messagesList.add(
+          Message(
+            type: "left",
+            msg: "left",
+            sender: data["username"],
+            timestamp: DateTime.now(),
+          ),
+        );
       });
     });
     socket!.on("userJoinedRoom", (data) {
@@ -122,6 +140,14 @@ class _ChatPageState extends State<ChatPage> {
               "memberId": data["memberId"],
               "permit": false,
             },
+          );
+          messagesList.add(
+            Message(
+              type: "join",
+              msg: "joined",
+              sender: data["username"],
+              timestamp: DateTime.now(),
+            ),
           );
         });
       }
@@ -182,14 +208,12 @@ class _ChatPageState extends State<ChatPage> {
         des: "Are you sure want to leave the room? We need you to stay!",
         firstButton: "Stay",
         secondButton: "Leave",
-        firstOnTap: () => Navigator.of(context).pushNamedAndRemoveUntil(
-          HomePage.routeID,
-          (route) => false,
-        ),
+        firstOnTap: () => Navigator.of(context).pop(),
         secondOnTap: () {
           Map<String, dynamic> data = {
             "roomID": widget.room.id,
-            "memberID": widget.user!.id
+            "memberID": widget.user!.id,
+            "username": widget.user!.username,
           };
           socket!.emit("removeMember", data);
           Navigator.of(context).pushNamedAndRemoveUntil(
@@ -295,7 +319,8 @@ class _ChatPageState extends State<ChatPage> {
                             onTap: () {
                               Map<String, dynamic> data = {
                                 "roomID": widget.room.id,
-                                "memberID": widget.user!.id
+                                "memberID": widget.user!.id,
+                                "username": widget.user!.username,
                               };
                               socket!.emit("adminRemoved", data);
                               Navigator.of(context).pushNamedAndRemoveUntil(
@@ -388,17 +413,40 @@ class _ChatPageState extends State<ChatPage> {
                           reverse: true,
                           itemBuilder: ((context, index) {
                             final messages = messagesList.reversed.toList();
-                            return messages[index].type == "ownMsg"
-                                ? OwnMessageWidget(
-                                    msg: messages[index].msg,
-                                    sender: messages[index].sender,
-                                    timestamp: messages[index].timestamp,
+                            return (messages[index].type == "left" ||
+                                    messages[index].type == "join")
+                                ? Center(
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 3,
+                                        vertical: 3,
+                                      ),
+                                      decoration: const BoxDecoration(
+                                        color: Colors.black26,
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(5),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        "${messages[index].sender} ${messages[index].msg}",
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
                                   )
-                                : OtherMessageWidget(
-                                    msg: messages[index].msg,
-                                    sender: messages[index].sender,
-                                    timestamp: messages[index].timestamp,
-                                  );
+                                : messages[index].type == "ownMsg"
+                                    ? OwnMessageWidget(
+                                        msg: messages[index].msg,
+                                        sender: messages[index].sender,
+                                        timestamp: messages[index].timestamp,
+                                      )
+                                    : OtherMessageWidget(
+                                        msg: messages[index].msg,
+                                        sender: messages[index].sender,
+                                        timestamp: messages[index].timestamp,
+                                      );
                           }),
                         ),
                       ),

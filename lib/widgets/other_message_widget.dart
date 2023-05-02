@@ -21,7 +21,7 @@ class OtherMessageWidget extends StatelessWidget {
           maxWidth: MediaQuery.of(context).size.width - 60,
         ),
         child: Padding(
-          padding: const EdgeInsets.only(top: 8.0),
+          padding: const EdgeInsets.only(top: 3.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -46,17 +46,6 @@ class OtherMessageWidget extends StatelessWidget {
                       width: 5,
                     ),
                     Text(sender),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      DateFormat("HH:mm").format(timestamp),
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white70,
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -71,15 +60,28 @@ class OtherMessageWidget extends StatelessWidget {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 15.0,
-                    vertical: 10,
+                    horizontal: 10.0,
+                    vertical: 5,
                   ),
-                  child: Text(
-                    msg,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        msg,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        DateFormat("HH:mm").format(timestamp),
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

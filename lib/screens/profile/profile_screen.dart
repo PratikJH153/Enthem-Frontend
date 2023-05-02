@@ -86,9 +86,10 @@ class _ProfilePageState extends State<ProfilePage> {
         "latitude": _currentPosition?.latitude,
         "longitude": _currentPosition?.longitude,
       });
-      //TODO: IT IS NOT UPDATING IN LOCAL
-      widget.user!.updateLocation(
-          _currentPosition?.latitude, _currentPosition?.longitude);
+      setState(() {
+        widget.user!.updateLocation(
+            _currentPosition?.latitude, _currentPosition?.longitude);
+      });
     } catch (err) {
       errorSnackBar(context: context, error: ErrorState.serverError);
     }

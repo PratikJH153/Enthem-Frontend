@@ -22,7 +22,6 @@ class GroupChatPage extends StatefulWidget {
 }
 
 class _GroupChatPageState extends State<GroupChatPage> {
-  static const String filename = "group_chat_screen.dart";
   late List<Room> roomsList;
   late final PageController _pageController;
   int pageIndex = 0;
