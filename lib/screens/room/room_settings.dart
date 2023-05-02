@@ -80,7 +80,7 @@ class _RoomSettingsState extends State<RoomSettings> {
       context,
       DialogBoxWidget(
         title: "Leave room",
-        des: "Are you sure want to leave the room? We need you to stay!",
+        des: "Are you sure want to leave this room? We need you to stay!",
         firstButton: "Stay",
         secondButton: "Leave",
         firstOnTap: () => Navigator.of(context).pop(false),
