@@ -325,58 +325,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // Widget usernameChange() {
-  //   return Container(
-  //     padding: const EdgeInsets.symmetric(
-  //       horizontal: 24,
-  //       vertical: 30,
-  //     ),
-  //     margin: const EdgeInsets.only(top: 120),
-  //     color: backgroundColor,
-  //     child: Column(
-  //       mainAxisSize: MainAxisSize.max,
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         const SizedBox(
-  //           height: 5,
-  //         ),
-  //         const Text(
-  //           "Change your username",
-  //           style: TextStyle(
-  //             fontSize: 20,
-  //             fontFamily: "Poppins",
-  //           ),
-  //         ),
-  //         const SizedBox(
-  //           height: 15,
-  //         ),
-  //         Container(
-  //           decoration: const BoxDecoration(
-  //             borderRadius: BorderRadius.all(
-  //               Radius.circular(10),
-  //             ),
-  //             color: Colors.black12,
-  //           ),
-  //           child: TextField(
-  //             controller: _usernameController,
-  //             decoration: const InputDecoration(
-  //               contentPadding: EdgeInsets.only(left: 20),
-  //               hintText: "Username",
-  //               border: InputBorder.none,
-  //             ),
-  //           ),
-  //         ),
-  //         const Spacer(),
-  //         DoneButton(
-  //           title: "Done",
-  //           isDisabled: false,
-  //           onTap: () {},
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(

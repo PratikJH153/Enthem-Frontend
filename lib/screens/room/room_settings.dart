@@ -61,6 +61,8 @@ class _RoomSettingsState extends State<RoomSettings> {
 
   Future<void> getParticipants() async {
     final data = await _userAPIRepository.getUsers(widget.room.participants!
+        .toSet()
+        .toList()
         .map((e) => e["memberId"] != null ? e["memberId"] as String : "")
         .toList());
     setState(() {
@@ -134,10 +136,10 @@ class _RoomSettingsState extends State<RoomSettings> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.more_vert),
-          ),
+          // IconButton(
+          //   onPressed: () {},
+          //   icon: const Icon(Icons.more_vert),
+          // ),
         ],
       ),
       body: _isloading
@@ -236,7 +238,7 @@ class _RoomSettingsState extends State<RoomSettings> {
                     height: 15,
                   ),
                   Text(
-                    "${widget.room.participants!.toSet().length} Participants",
+                    "${_participants.length} Participants",
                     style: const TextStyle(
                       fontSize: 14.0,
                       color: Colors.white54,
@@ -249,6 +251,7 @@ class _RoomSettingsState extends State<RoomSettings> {
                     child: ListView.builder(
                       itemCount: _participants.length,
                       itemBuilder: (context, index) {
+                        print(_participants);
                         final participant = _participants[index];
                         return ChatParticipantTileWidget(
                           participant: participant,
