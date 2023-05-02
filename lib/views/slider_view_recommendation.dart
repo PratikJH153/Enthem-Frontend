@@ -26,7 +26,6 @@ class SliderViewRecommendation extends StatefulWidget {
 class _SliderViewRecommendationState extends State<SliderViewRecommendation> {
   late List<Friend> friends;
   late final PageController _pageController;
-  static const String filename = "slider_view_recommendation.dart";
 
   @override
   void initState() {

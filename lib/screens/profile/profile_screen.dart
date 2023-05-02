@@ -1,3 +1,10 @@
+import 'package:enthem2frontend/helper/display_user_dp.dart';
+import 'package:enthem2frontend/screens/home/home_screen.dart';
+import 'package:enthem2frontend/utils/encryption.dart';
+import 'package:enthem2frontend/widgets/custom_dialog_box.dart';
+import 'package:enthem2frontend/widgets/dialog_box_widget.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 import '/constants/page_padding.dart';
 import '/database/repositories/room_api_repository.dart';
 import '/firebase/sign_in_method.dart';
@@ -79,7 +86,10 @@ class _ProfilePageState extends State<ProfilePage> {
         "latitude": _currentPosition?.latitude,
         "longitude": _currentPosition?.longitude,
       });
-      //TODO: IT IS NOT UPDATING IN LOCAL
+      setState(() {
+        widget.user!.updateLocation(
+            _currentPosition?.latitude, _currentPosition?.longitude);
+      });
     } catch (err) {
       errorSnackBar(context: context, error: ErrorState.serverError);
     }
@@ -99,13 +109,56 @@ class _ProfilePageState extends State<ProfilePage> {
     super.dispose();
   }
 
-  void signOut(BuildContext context) {
+  void logout(BuildContext context) {
     _authService.signOut().then((value) {
-      Navigator.of(context)
-          .pushNamedAndRemoveUntil(OnboardPage.routeID, (route) => false);
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        OnboardPage.routeID,
+        (route) => false,
+      );
     }).catchError((err) {
       debugError(err, filename);
     });
+  }
+
+  void deleteAccount() async {
+    try {
+      setState(() {
+        _isSettingsLoading = true;
+      });
+      bool isDeleted = await _userAPIRepository.deleteUser({
+        "id": encrypt(
+          widget.user!.id!,
+          dotenv.env["SECRET_KEY"]!,
+        ),
+      });
+      if (isDeleted) {
+        await _authService.signOut();
+        if (context.mounted) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            OnboardPage.routeID,
+            (route) => false,
+          );
+        } else {
+          setState(() {
+            _isSettingsLoading = false;
+          });
+          errorSnackBar(
+            context: context,
+            error: ErrorState.otherError,
+          );
+        }
+      }
+    } catch (err) {
+      debugError(err.toString(), filename);
+      errorSnackBar(
+        context: context,
+        error: ErrorState.serverError,
+      );
+      setState(() {
+        _isSettingsLoading = false;
+      });
+      rethrow;
+    }
   }
 
   void getRoomsByOwnerID() async {
@@ -205,7 +258,22 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             onPressed: () {
-                              signOut(context);
+                              showCustomDialog(
+                                context,
+                                DialogBoxWidget(
+                                  title: "Logout",
+                                  des:
+                                      "Are you sure want to logout of your account? We will miss you!",
+                                  firstButton: "Yes",
+                                  secondButton: "Cancel",
+                                  firstOnTap: () {
+                                    logout(context);
+                                  },
+                                  secondOnTap: () {
+                                    Navigator.of(context).pop(false);
+                                  },
+                                ),
+                              );
                             },
                             child: const Center(
                               child: Text("Logout"),
@@ -226,43 +294,22 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             onPressed: () async {
-                              try {
-                                setState(() {
-                                  _isSettingsLoading = true;
-                                });
-                                bool isDeleted = await _userAPIRepository
-                                    .deleteUser({"id": widget.user!.id!});
-                                // bool isDeletedSQL = await _userAPIRepository
-                                //     .deleteUserSQL(widget.user!.id!);
-                                if (isDeleted) {
-                                  await _authService.signOut();
-                                  if (context.mounted) {
-                                    Navigator.of(context)
-                                        .pushNamedAndRemoveUntil(
-                                      OnboardPage.routeID,
-                                      (route) => false,
-                                    );
-                                  } else {
-                                    setState(() {
-                                      _isSettingsLoading = false;
-                                    });
-                                    errorSnackBar(
-                                      context: context,
-                                      error: ErrorState.otherError,
-                                    );
-                                  }
-                                }
-                              } catch (err) {
-                                debugError(err.toString(), filename);
-                                errorSnackBar(
-                                  context: context,
-                                  error: ErrorState.serverError,
-                                );
-                                setState(() {
-                                  _isSettingsLoading = false;
-                                });
-                                rethrow;
-                              }
+                              showCustomDialog(
+                                context,
+                                DialogBoxWidget(
+                                  title: "Delete Account",
+                                  des:
+                                      "Are you sure want to delete your account permanently?",
+                                  firstButton: "Yes",
+                                  secondButton: "Cancel",
+                                  firstOnTap: () {
+                                    deleteAccount();
+                                  },
+                                  secondOnTap: () {
+                                    Navigator.of(context).pop(false);
+                                  },
+                                ),
+                              );
                             },
                             child: const Center(
                               child: Text("Delete Account Permanently"),
@@ -332,256 +379,264 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            onPressed: () {
-              errorSnackBar(context: context, error: ErrorState.workingFeature);
-            },
-            icon: const Icon(
-              CupertinoIcons.share,
-              size: 25,
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil(HomePage.routeID, (route) => false);
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          actions: [
+            IconButton(
+              onPressed: () {
+                errorSnackBar(
+                    context: context, error: ErrorState.workingFeature);
+              },
+              icon: const Icon(
+                CupertinoIcons.share,
+                size: 25,
+              ),
             ),
-          ),
-          IconButton(
-            onPressed: () {
-              showModalBottomSheet(
-                  context: context,
-                  builder: (context) {
-                    return bottomPage();
-                  });
-            },
-            icon: const Icon(
-              CupertinoIcons.settings,
-              size: 25,
+            IconButton(
+              onPressed: () {
+                showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return bottomPage();
+                    });
+              },
+              icon: const Icon(
+                CupertinoIcons.settings,
+                size: 25,
+              ),
             ),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: kPagePadding,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      margin: const EdgeInsets.only(bottom: 15),
-                      decoration: const BoxDecoration(
-                        color: Color.fromARGB(255, 37, 36, 37),
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: kPagePadding,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        margin: const EdgeInsets.only(bottom: 15),
+                        decoration: const BoxDecoration(
+                          color: Color.fromARGB(255, 37, 36, 37),
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                        ),
+                        child: Text(
+                          displayUserPicture(widget.user!.username!),
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontFamily: "Poppins",
+                          ),
+                        ),
                       ),
-                      child: Text(
-                        "${widget.user!.username.toString()[0].toUpperCase()}${widget.user!.username.toString()[widget.user!.username!.length - 1].toUpperCase()}",
+                      Text(
+                        widget.user!.username!,
                         style: const TextStyle(
-                          fontSize: 20,
+                          fontSize: 30,
                           fontFamily: "Poppins",
                         ),
                       ),
-                    ),
-                    Text(
-                      widget.user!.username!,
-                      style: const TextStyle(
-                        fontSize: 30,
-                        fontFamily: "Poppins",
+                      Text(
+                        widget.user!.email!,
                       ),
-                    ),
-                    Text(
-                      widget.user!.email!,
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          // TextButton(
+                          //   onPressed: () {},
+                          //   style: TextButton.styleFrom(
+                          //     padding: EdgeInsets.zero,
+                          //     textStyle: const TextStyle(
+                          //       fontSize: 16,
+                          //     ),
+                          //   ),
+                          //   child: const Text(
+                          //     "Add a bio",
+                          //   ),
+                          // ),
+                          // const SizedBox(
+                          //   width: 20,
+                          // ),
+                          _isLocationLoading
+                              ? const Center(
+                                  child: LoadingWidget(),
+                                )
+                              : TextButton(
+                                  onPressed: () async {
+                                    await _getCurrentPosition()
+                                        .then((value) async {
+                                      debugData(_currentPosition, filename);
+                                      await updateUser();
+                                    }).catchError((err) {});
+                                  },
+                                  style: TextButton.styleFrom(
+                                    padding: EdgeInsets.zero,
+                                    textStyle: const TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    "Update my location",
+                                  ),
+                                ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      const Text(
+                        "Interests",
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.white54,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  children: [
+                    SizedBox(
+                      height: 35,
+                      child: ListView.builder(
+                        itemCount: index1,
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.only(left: 15),
+                        itemBuilder: (context, index) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 5,
+                            ),
+                            margin: const EdgeInsets.only(
+                              right: 10,
+                            ),
+                            alignment: Alignment.center,
+                            decoration: const BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(100),
+                              ),
+                              color: Colors.white24,
+                            ),
+                            child: Text(
+                              widget.user!.interests![index],
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                     const SizedBox(
                       height: 10,
                     ),
-                    Row(
-                      children: [
-                        // TextButton(
-                        //   onPressed: () {},
-                        //   style: TextButton.styleFrom(
-                        //     padding: EdgeInsets.zero,
-                        //     textStyle: const TextStyle(
-                        //       fontSize: 16,
-                        //     ),
-                        //   ),
-                        //   child: const Text(
-                        //     "Add a bio",
-                        //   ),
-                        // ),
-                        // const SizedBox(
-                        //   width: 20,
-                        // ),
-                        _isLocationLoading
-                            ? const Center(
-                                child: LoadingWidget(),
-                              )
-                            : TextButton(
-                                onPressed: () async {
-                                  await _getCurrentPosition()
-                                      .then((value) async {
-                                    debugData(_currentPosition, filename);
-                                    await updateUser();
-                                  }).catchError((err) {});
-                                },
-                                style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  textStyle: const TextStyle(
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                child: const Text(
-                                  "Update my location",
-                                ),
+                    SizedBox(
+                      height: 35,
+                      child: ListView.builder(
+                        itemCount: widget.user!.interests!.length - index1,
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.only(left: 15),
+                        itemBuilder: (context, index) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 5,
+                            ),
+                            margin: const EdgeInsets.only(
+                              right: 10,
+                            ),
+                            alignment: Alignment.center,
+                            decoration: const BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(100),
                               ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    const Text(
-                      "Interests",
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        color: Colors.white54,
+                              color: Colors.white24,
+                            ),
+                            child: Text(
+                              widget.user!.interests![index + index1],
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
-                    const SizedBox(
-                      height: 15,
-                    ),
                   ],
                 ),
-              ),
-              Column(
-                children: [
-                  SizedBox(
-                    height: 35,
-                    child: ListView.builder(
-                      itemCount: index1,
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.only(left: 15),
-                      itemBuilder: (context, index) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 15,
-                            vertical: 5,
-                          ),
-                          margin: const EdgeInsets.only(
-                            right: 10,
-                          ),
-                          alignment: Alignment.center,
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(100),
-                            ),
-                            color: Colors.white24,
-                          ),
-                          child: Text(
-                            widget.user!.interests![index],
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
+                Padding(
+                  padding: kPagePadding,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Rooms",
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: Colors.white54,
                             ),
                           ),
-                        );
-                      },
-                    ),
+                          TextButton(
+                            onPressed: () {},
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              textStyle: const TextStyle(
+                                fontSize: 14,
+                              ),
+                            ),
+                            child: const Text(
+                              "View All",
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        height: 200,
+                        margin: const EdgeInsets.only(bottom: 20),
+                        child: _isLoading
+                            ? const Center(child: LoadingWidget())
+                            : rooms.isEmpty
+                                ? const Text("No rooms created yet")
+                                : ListView.builder(
+                                    itemCount: rooms.length,
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder: (context, index) {
+                                      return ProfileRoomsWidget(
+                                          room: rooms[index]);
+                                    },
+                                  ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  SizedBox(
-                    height: 35,
-                    child: ListView.builder(
-                      itemCount: widget.user!.interests!.length - index1,
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.only(left: 15),
-                      itemBuilder: (context, index) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 15,
-                            vertical: 5,
-                          ),
-                          margin: const EdgeInsets.only(
-                            right: 10,
-                          ),
-                          alignment: Alignment.center,
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(100),
-                            ),
-                            color: Colors.white24,
-                          ),
-                          child: Text(
-                            widget.user!.interests![index + index1],
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: kPagePadding,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "Rooms",
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            color: Colors.white54,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {},
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            textStyle: const TextStyle(
-                              fontSize: 14,
-                            ),
-                          ),
-                          child: const Text(
-                            "View All",
-                          ),
-                        ),
-                      ],
-                    ),
-                    Container(
-                      height: 200,
-                      margin: const EdgeInsets.only(bottom: 20),
-                      child: _isLoading
-                          ? const Center(child: LoadingWidget())
-                          : rooms.isEmpty
-                              ? const Text("No rooms created yet")
-                              : ListView.builder(
-                                  itemCount: rooms.length,
-                                  scrollDirection: Axis.horizontal,
-                                  itemBuilder: (context, index) {
-                                    return ProfileRoomsWidget(
-                                        room: rooms[index]);
-                                  },
-                                ),
-                    ),
-                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

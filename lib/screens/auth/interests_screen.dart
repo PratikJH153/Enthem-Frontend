@@ -27,17 +27,17 @@ class _InterestsPageState extends State<InterestsPage> {
 
   void navigateToHomePage() async {
     debugData(widget.userModel.toString(), filename);
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder: (context) => const HomePage(),
-      ),
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      HomePage.routeID,
       (route) => false,
     );
   }
 
   void addInterests() async {
     try {
-      if (selectedInterests.isEmpty) {
+      if (selectedInterests.isEmpty ||
+          selectedInterests.length < 5 ||
+          selectedInterests.length > 15) {
         return errorSnackBar(
           context: context,
           error: ErrorState.interestsNotAdded,
@@ -72,7 +72,9 @@ class _InterestsPageState extends State<InterestsPage> {
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: AuthContinueButton(
-        isDisabled: selectedInterests.length < 5,
+        isDisabled: selectedInterests.isEmpty ||
+            selectedInterests.length < 5 ||
+            selectedInterests.length > 15,
         onTap: addInterests,
       ),
       body: SafeArea(

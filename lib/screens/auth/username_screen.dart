@@ -39,12 +39,9 @@ class _UsernamePageState extends State<UsernamePage> {
         widget.userInterface.username = _usernameController.text;
         debugData(widget.userInterface.toString(), filename);
         if (context.mounted) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => DOBPage(
-                userInterface: widget.userInterface,
-              ),
-            ),
+          Navigator.of(context).pushNamed(
+            DOBPage.routeID,
+            arguments: widget.userInterface,
           );
         }
       } else {

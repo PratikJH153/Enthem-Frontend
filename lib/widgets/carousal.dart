@@ -29,6 +29,10 @@ Widget carouselCard(
   bool showCompatible = true,
   bool showMiles = true,
 }) {
+  List<dynamic> interests = data.interests;
+  if (interests.length > 4) {
+    interests = interests.sublist(0, 4);
+  }
   return Column(
     children: <Widget>[
       Expanded(
@@ -102,7 +106,7 @@ Widget carouselCard(
                         ),
                         showMiles
                             ? Text(
-                                "${data.distance.toStringAsFixed(2)} mil",
+                                data.distanceText,
                                 style: const TextStyle(
                                   color: Colors.white60,
                                   fontSize: 14,
@@ -146,16 +150,17 @@ Widget carouselCard(
                             ],
                           )
                         : Wrap(
-                            children: data.interests
+                            children: interests
                                 .map(
                                   (e) => Container(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 5,
                                       vertical: 2,
                                     ),
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       color: Colors.white10,
-                                      borderRadius: BorderRadius.circular(5),
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(5)),
                                     ),
                                     margin: const EdgeInsets.only(
                                       right: 5,

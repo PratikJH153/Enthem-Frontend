@@ -1,17 +1,20 @@
 import 'package:equatable/equatable.dart';
 
+// ignore: must_be_immutable
 class Room extends Equatable {
-  final String? id;
+  String? id;
+  bool? isIntroduce;
   final String title;
-  final String? des;
+  String? des;
   final String ownerID;
   final DateTime createdAt;
   final List<double> coordinates;
-  final int? votes;
-  final List<dynamic>? participants;
+  int? votes;
+  List<dynamic>? participants;
 
-  const Room({
+  Room({
     this.id,
+    this.isIntroduce = false,
     required this.title,
     this.des,
     required this.ownerID,
@@ -28,8 +31,13 @@ class Room extends Equatable {
 
   factory Room.fromJson(Map<String, dynamic> json) {
     final List<double> coordinates = [];
-    json["location"]["coordinates"]
-        .forEach((c) => coordinates.add(double.parse(c.toString())));
+    json["location"]["coordinates"].forEach(
+      (c) => coordinates.add(
+        double.parse(
+          c.toString(),
+        ),
+      ),
+    );
 
     final Room room = Room(
       id: json["_id"],

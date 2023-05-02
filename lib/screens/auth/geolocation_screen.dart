@@ -8,7 +8,6 @@ import 'package:enthem2frontend/screens/home/home_screen.dart';
 import 'package:enthem2frontend/services/debug_console.dart';
 import 'package:enthem2frontend/theme/theme.dart';
 import 'package:enthem2frontend/utils/location_permission.dart';
-import 'package:enthem2frontend/widgets/auth_continue_button.dart';
 import 'package:enthem2frontend/widgets/loading_widget.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:lottie/lottie.dart';
@@ -81,22 +80,18 @@ class _GeoLocationPageState extends State<GeoLocationPage> {
       //     await _apiRepository.registerUserSQL(userModel);
       if (context.mounted) {
         if (isUserRegistered == 200) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (context) => const InterestsPage(),
-            ),
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            InterestsPage.routeID,
             (route) => false,
           );
         } else if (isUserRegistered == 409) {
           errorSnackBar(context: context, error: ErrorState.userExists);
           Future.delayed(
               const Duration(
-                seconds: 1,
+                milliseconds: 500,
               ), () {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                builder: (context) => const HomePage(),
-              ),
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              HomePage.routeID,
               (route) => false,
             );
           });
@@ -119,7 +114,7 @@ class _GeoLocationPageState extends State<GeoLocationPage> {
         backgroundColor: Colors.transparent,
         actions: [
           TextButton(
-            onPressed: registerUser,
+            onPressed: navigateToHomePage,
             child: const Text("Skip"),
           ),
         ],
@@ -154,7 +149,7 @@ class _GeoLocationPageState extends State<GeoLocationPage> {
                   ? _getCurrentPosition()
                   : Future.delayed(
                       const Duration(milliseconds: 200),
-                      registerUser,
+                      navigateToHomePage,
                     ),
               child: Container(
                 width: double.infinity,

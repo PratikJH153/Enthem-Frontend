@@ -51,10 +51,8 @@ class _OnboardPageState extends State<OnboardPage> {
         final bool isUserExists = await checkUserExists(context, user.uid);
         if (isUserExists) {
           if (context.mounted) {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                builder: (context) => const HomePage(),
-              ),
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              HomePage.routeID,
               (route) => false,
             );
           } else {
@@ -66,10 +64,9 @@ class _OnboardPageState extends State<OnboardPage> {
           userModel.photoURL = user.photoURL;
           debugData(userModel.toString(), OnboardPage.filename);
           if (context.mounted) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => UsernamePage(userInterface: userModel),
-              ),
+            Navigator.of(context).pushNamed(
+              UsernamePage.routeID,
+              arguments: userModel,
             );
           } else {
             debugError("Not mounted", OnboardPage.filename);

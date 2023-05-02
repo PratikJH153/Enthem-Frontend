@@ -15,6 +15,9 @@ enum ErrorState {
   errorLocation,
   interestsNotAdded,
   workingFeature,
+  deleteRoomError,
+  searchTitleRequired,
+  createRoomTitleRequired,
   otherError,
 }
 
@@ -70,8 +73,8 @@ ErrorModel getError(ErrorState error) {
   } else if (error == ErrorState.locationDenied) {
     return ErrorModel(
       title: "Location permissions are denied",
-      des:
-          "Location permissions are permanently denied, we cannot request permissions.",
+      // Location permissions are permanently denied, we cannot request permissions.
+      des: "",
       status: "warning",
     );
   } else if (error == ErrorState.errorLocation) {
@@ -82,9 +85,27 @@ ErrorModel getError(ErrorState error) {
     );
   } else if (error == ErrorState.interestsNotAdded) {
     return ErrorModel(
-      title: "Atleast 5 interests needed!",
+      title: "Atleast 5 - 15 interests needed!",
       des: "Please add more interests!",
       status: "failure",
+    );
+  } else if (error == ErrorState.deleteRoomError) {
+    return ErrorModel(
+      title: "Sorry, can't remove the room!",
+      des: "Please try again later!",
+      status: "failure",
+    );
+  } else if (error == ErrorState.searchTitleRequired) {
+    return ErrorModel(
+      title: "Title should be atleast 3 characters",
+      des: "",
+      status: "warning",
+    );
+  } else if (error == ErrorState.createRoomTitleRequired) {
+    return ErrorModel(
+      title: "Title should be between 5-60 characters",
+      des: "",
+      status: "warning",
     );
   } else if (error == ErrorState.workingFeature) {
     return ErrorModel(

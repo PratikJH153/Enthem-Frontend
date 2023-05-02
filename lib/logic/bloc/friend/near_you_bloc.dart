@@ -1,3 +1,5 @@
+import 'package:enthem2frontend/utils/loading_delay.dart';
+
 import '/logic/repositories/user_api_repository.dart';
 import '/models/friend.dart';
 import '/logic/provider/friend_api_provider.dart';
@@ -14,12 +16,14 @@ class NearYouBloc extends Cubit<NearYouState> {
   }
 
   Future<void> fetchNearby(String userId, int offset) async {
-    try {
-      List<Friend> friendList = await _provider.nearby(userId, offset);
+    loadingDelay(() async {
+      try {
+        List<Friend> friendList = await _provider.nearby(userId, offset);
 
-      emit(NearYouFetchedState(friendList));
-    } catch (e) {
-      emit(NearYouFailedState(e));
-    }
+        emit(NearYouFetchedState(friendList));
+      } catch (e) {
+        emit(NearYouFailedState(e));
+      }
+    });
   }
 }
