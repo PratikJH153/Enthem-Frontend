@@ -1,6 +1,6 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-const bool _kProdMode = false;
+const bool _kProdMode = true;
 final String localPort = dotenv.env['localPort']!;
 final String prodPort = dotenv.env['prodPort']!;
 final String socketPort = dotenv.env['socketPort']!;

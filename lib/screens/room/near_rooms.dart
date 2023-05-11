@@ -1,120 +1,76 @@
-import 'package:enthem2frontend/database/repositories/room_api_repository.dart';
-import 'package:enthem2frontend/helper/compute_distance.dart';
-import 'package:enthem2frontend/models/room.dart';
-import 'package:enthem2frontend/models/user.dart';
-import 'package:enthem2frontend/services/debug_console.dart';
-import 'package:enthem2frontend/views/no_rooms_found_view.dart';
-import 'package:enthem2frontend/widgets/custom_snackbar.dart';
-import 'package:enthem2frontend/widgets/loading_widget.dart';
-import 'package:enthem2frontend/widgets/room_tile.dart';
-import 'package:enthem2frontend/widgets/shaded_list_widget.dart';
+import '/logic/provider/rooms_provider.dart';
+import '/logic/provider/user_provider.dart';
+import '/models/user.dart';
+import '/helper/compute_distance.dart';
+import '/views/no_rooms_found_view.dart';
+import '/widgets/loading_widget.dart';
+import '/widgets/room_tile.dart';
+import '/widgets/shaded_list_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class NearRoomsPage extends StatefulWidget {
-  final UserModel user;
-  const NearRoomsPage({required this.user, super.key});
+  const NearRoomsPage({super.key});
 
   @override
   State<NearRoomsPage> createState() => _NearRoomsPageState();
 }
 
 class _NearRoomsPageState extends State<NearRoomsPage> {
-  static const String filename = "near_rooms.dart";
-  final RoomAPIRepository _apiRepository = RoomAPIRepository();
-  late List<Room> roomsList = [];
-  bool _isLoading = false;
-
   @override
   void initState() {
-    getRoomsList();
     super.initState();
   }
 
-  Future<Room> getIntroduceRoom() async {
-    try {
-      final data = await _apiRepository.getIntroduceRoom();
-      data.isIntroduce = true;
-      return data;
-    } catch (err) {
-      debugError(err.toString(), filename);
-      showSnackBar(
-        context: context,
-        status: "failure",
-        title: "Server issue!",
-        des: "Couldn't connect to the server",
-      );
+  Future<void> _refreshRooms() async {
+    final RoomsProvider roomsProvider = context.read<RoomsProvider>();
+    final UserDataProvider userDataProvider = context.read<UserDataProvider>();
 
-      rethrow;
-    }
-  }
-
-  Future<void> getRoomsList() async {
-    try {
-      setState(() {
-        _isLoading = true;
-      });
-      final introduceRoom = await getIntroduceRoom();
-      final data = await _apiRepository.getAllRooms(
-        miles: 10,
-        coordinates: [
-          widget.user.longitude ?? 0,
-          widget.user.latitude ?? -90,
-        ],
-        page: 1,
-      );
-      setState(() {
-        roomsList = data;
-        roomsList.insert(0, introduceRoom);
-        _isLoading = false;
-      });
-    } catch (err) {
-      debugError(err.toString(), filename);
-      showSnackBar(
-        context: context,
-        status: "failure",
-        title: "Server issue!",
-        des: "Couldn't connect to the server",
-      );
-      setState(() {
-        _isLoading = false;
-      });
-      rethrow;
-    }
-  }
-
-  Future refresh() async {
-    await getRoomsList();
+    UserModel user = userDataProvider.userData!;
+    roomsProvider.setNearbyData(user);
   }
 
   @override
   Widget build(BuildContext context) {
+    final RoomsProvider roomsProvider = context.watch<RoomsProvider>();
+    final UserDataProvider userDataProvider = context.watch<UserDataProvider>();
+
+    UserModel user = userDataProvider.userData!;
+    final roomsList = roomsProvider.nearbyList;
+
+    if (roomsProvider.nearbyAsyncState == AsyncState.isLoading) {
+      return const LoadingWidget();
+    }
+
+    if (roomsProvider.nearbyAsyncState == AsyncState.wentWrong) {
+      return const WentWrongPage();
+    }
+
     return ShadedList(
-      widget: _isLoading
-          ? const Center(child: LoadingWidget())
-          : RefreshIndicator(
-              onRefresh: refresh,
-              child: roomsList.isEmpty
-                  ? NoRoomsFoundScreen(onTap: refresh)
-                  : ListView.builder(
-                      padding: const EdgeInsets.only(
-                        bottom: 100,
-                        top: 20,
-                      ),
-                      itemCount: roomsList.length,
-                      itemBuilder: (context, index) {
-                        final room = roomsList[index];
-                        final distance = computeDistance(
-                          [widget.user.longitude!, widget.user.latitude!],
-                          roomsList[index].coordinates,
-                        ).toStringAsFixed(2);
-                        return RoomTileWidget(
-                          user: widget.user,
-                          room: room,
-                          distance: distance,
-                        );
-                      },
-                    ),
-            ),
+      widget: RefreshIndicator(
+        onRefresh: _refreshRooms,
+        child: roomsList.isEmpty
+            ? NoRoomsFoundScreen(onTap: _refreshRooms)
+            : ListView.builder(
+                padding: const EdgeInsets.only(
+                  bottom: 100,
+                  top: 20,
+                ),
+                itemCount: roomsList.length,
+                itemBuilder: (context, index) {
+                  final room = roomsList[index];
+                  final distance = computeDistance(
+                    [user.longitude!, user.latitude!],
+                    roomsList[index].coordinates,
+                  ).toStringAsFixed(2);
+                  return RoomTileWidget(
+                    user: user,
+                    room: room,
+                    distance: distance,
+                  );
+                },
+              ),
+      ),
     );
   }
 }

@@ -1,8 +1,8 @@
-import 'package:enthem2frontend/helper/error_constants.dart';
-import 'package:enthem2frontend/widgets/primary_button.dart';
-
+import '/logic/provider/user_provider.dart';
+import '/helper/error_constants.dart';
+import '/widgets/primary_button.dart';
+import '/logic/provider/global_data_provider.dart';
 import '/database/repositories/room_api_repository.dart';
-import '/logic/repositories/user_api_repository.dart';
 import '/models/room.dart';
 import '/models/user.dart';
 import '/screens/home/find_friends_screen.dart';
@@ -15,6 +15,7 @@ import '/widgets/custom_snackbar.dart';
 import '/widgets/loading_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   static const routeID = "/homepage";
@@ -27,16 +28,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   static const String filename = "home_screen.dart";
-  final UserAPIRepository _apiRepository = UserAPIRepository();
   final RoomAPIRepository _roomApiRepository = RoomAPIRepository();
   late final PageController _pageController;
   FocusNode myfocus = FocusNode();
   int _bottomSelectedIndex = 1;
-  late final UserModel user;
   bool _isLoading = false;
   final TextEditingController _roomController = TextEditingController();
 
-  Future<void> addRoom() async {
+  Future<void> addRoom(UserModel user) async {
     if (_roomController.text.trim().length > 5) {
       try {
         final Room room = Room(
@@ -49,6 +48,8 @@ class _HomePageState extends State<HomePage> {
           createdAt: DateTime.now(),
         );
         await _roomApiRepository.addRoom(room);
+        await GlobalDataProvider.resetRoomsDataProvider(context);
+
         if (context.mounted) {
           myfocus.unfocus();
           showSnackBar(
@@ -73,30 +74,6 @@ class _HomePageState extends State<HomePage> {
           error: ErrorState.createRoomTitleRequired,
         );
       }
-    }
-  }
-
-  void getUser() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final data = await _apiRepository.getUser(_apiRepository.getUserID());
-      setState(() {
-        user = data;
-        _isLoading = false;
-      });
-      debugData(user, filename);
-    } catch (err) {
-      debugError(err.toString(), filename);
-      showSnackBar(
-        context: context,
-        status: "failure",
-        title: "Server issue!",
-        des: "Couldn't connect to the server",
-      );
-      rethrow;
     }
   }
 
@@ -149,13 +126,36 @@ class _HomePageState extends State<HomePage> {
     ];
   }
 
+  void _initializeProviders() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await GlobalDataProvider.initializeProviders(context);
+    } on Exception catch (e) {
+      debugError(e.toString(), filename);
+      showSnackBar(
+        context: context,
+        status: "failure",
+        title: "Server issue!",
+        des: "Couldn't connect to the server",
+      );
+      rethrow;
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   @override
   void initState() {
     _pageController = PageController(
       initialPage: 1,
       keepPage: true,
     );
-    getUser();
+    _initializeProviders();
     super.initState();
   }
 
@@ -177,11 +177,18 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading
-        ? const Center(
-            child: LoadingWidget(),
-          )
-        : Scaffold(
+    UserDataProvider provider = context.watch<UserDataProvider>();
+    final UserModel? user = provider.userData;
+
+    if (provider.userDataAsyncState == AsyncState.isLoading || _isLoading) {
+      return const LoadingWidget();
+    }
+
+    if (provider.userDataAsyncState == AsyncState.wentWrong) {
+      return const WentWrongPage();
+    }
+
+    return Scaffold(
             bottomNavigationBar: Padding(
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -229,7 +236,10 @@ class _HomePageState extends State<HomePage> {
                               ),
                               PrimaryButton(
                                 icon: CupertinoIcons.paperplane,
-                                onTap: addRoom,
+                                onTap: () async {
+                                  await addRoom(user!);
+                                  await GlobalDataProvider.resetRoomsDataProvider(context);
+                                },
                               ),
                             ],
                           )
@@ -252,17 +262,11 @@ class _HomePageState extends State<HomePage> {
               controller: _pageController,
               allowImplicitScrolling: false,
               physics: const NeverScrollableScrollPhysics(),
-              children: [
-                FindFriendsPage(
-                  user: user,
-                ),
-                GroupChatPage(
-                  user: user,
-                ),
-                const MessagesPage(),
-                ProfilePage(
-                  user: user,
-                ),
+              children: const [
+                FindFriendsPage(),
+                GroupChatPage(),
+                MessagesPage(),
+                ProfilePage(),
               ],
             ),
           );

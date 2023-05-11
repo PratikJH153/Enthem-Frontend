@@ -1,20 +1,16 @@
-import 'package:enthem2frontend/logic/bloc/friend/for_you_bloc.dart';
-import 'package:enthem2frontend/logic/bloc/friend/near_you_bloc.dart';
-import 'package:enthem2frontend/screens/home/home_screen.dart';
-
+import '/logic/provider/user_provider.dart';
+import '/views/slider_view_recommendation_for_you.dart';
+import '/views/slider_view_recommendation_near_by.dart';
+import '/screens/home/home_screen.dart';
 import '/constants/page_padding.dart';
 import '/models/user.dart';
-import '/views/slider_view_recommendation.dart';
-import '/views/slider_view_recommendation_near.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 class FindFriendsPage extends StatefulWidget {
   static const routeID = "/findfriendspage";
-  final UserModel? user;
 
   const FindFriendsPage({
-    this.user,
     super.key,
   });
 
@@ -50,6 +46,9 @@ class _FindFriendsPageState extends State<FindFriendsPage> {
 
   @override
   Widget build(BuildContext context) {
+    UserDataProvider userDataProvider = context.read<UserDataProvider>();
+    UserModel user = userDataProvider.userData!;
+
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context)
@@ -107,19 +106,13 @@ class _FindFriendsPageState extends State<FindFriendsPage> {
                     allowImplicitScrolling: false,
                     physics: const NeverScrollableScrollPhysics(),
                     children: [
-                      BlocProvider<ForYouBloc>(
-                        create: (_) => ForYouBloc(),
-                        child: SliderViewRecommendation(
-                          userID: widget.user!.id!,
-                          isLocationGiven: widget.user!.isLocationGiven,
-                        ),
+                      SliderViewRecommendationForYou(
+                        userID: user.id!,
+                        isLocationGiven: user.isLocationGiven,
                       ),
-                      BlocProvider<NearYouBloc>(
-                        create: (_) => NearYouBloc(),
-                        child: SliderViewRecommendationNear(
-                          userID: widget.user!.id!,
-                          isLocationGiven: widget.user!.isLocationGiven,
-                        ),
+                      SliderViewRecommendationNearBy(
+                        userID: user.id!,
+                        isLocationGiven: user.isLocationGiven,
                       ),
                     ],
                   ),
