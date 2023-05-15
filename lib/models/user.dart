@@ -1,8 +1,9 @@
+import 'package:enthem2frontend/constants/constants.dart';
 import 'package:enthem2frontend/interfaces/user.dart';
 import 'package:enthem2frontend/utils/encryption.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+// ignore: must_be_immutable
 class UserModel extends Equatable {
   final String? id;
   final String? username;
@@ -10,22 +11,22 @@ class UserModel extends Equatable {
   final String? photoURL;
   final String? gender;
   final int? age;
-  final List<dynamic>? interests;
-  final double? latitude;
-  final double? longitude;
+  List<String>? interests;
+  double? latitude;
+  double? longitude;
 
   bool get isLocationGiven {
     return !(latitude == -90.0 && longitude == 0);
   }
 
-  const UserModel({
+  UserModel({
     required this.id,
     required this.username,
     required this.email,
     required this.photoURL,
     required this.gender,
     required this.age,
-    required this.interests,
+    this.interests,
     required this.latitude,
     required this.longitude,
   });
@@ -59,14 +60,16 @@ class UserModel extends Equatable {
   factory UserModel.fromJson(Map<String, dynamic> userData) {
     final UserModel user = UserModel(
       id: userData["id"] != null
-          ? decrypt(userData["id"].toString(), dotenv.env["SECRET_KEY"]!)
+          ? decrypt(userData["id"].toString(), env["SECRET_KEY"]!)
           : null,
       username: userData["username"].toString().trim(),
-      email: decrypt(userData["email"].toString(), dotenv.env["SECRET_KEY"]!),
+      email: decrypt(userData["email"].toString(), env["SECRET_KEY"]!),
       photoURL: userData["photoURL"].toString(),
       gender: userData["gender"],
       age: int.parse(userData["age"].toString()),
-      interests: userData["interests"],
+      interests: userData["interests"] != null
+          ? userData["interests"].whereType<String>().toList()
+          : userData["interests"],
       latitude: userData["latitude"] is Map
           ? double.parse(userData["latitude"]["low"].toString())
           : userData["latitude"] == null

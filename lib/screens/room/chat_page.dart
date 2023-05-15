@@ -12,7 +12,6 @@ import 'package:enthem2frontend/widgets/other_message_widget.dart';
 import 'package:enthem2frontend/widgets/own_message_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lottie/lottie.dart';
 import '../../widgets/custom_dialog_box.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -83,8 +82,8 @@ class _ChatPageState extends State<ChatPage> {
         messagesList.add(
           Message(
             type: "msg",
-            msg: decrypt(msg["content"], dotenv.env["SECRET_KEY"]!),
-            sender: decrypt(msg["sender"], dotenv.env["SECRET_KEY"]!),
+            msg: decrypt(msg["content"], env["SECRET_KEY"]!),
+            sender: decrypt(msg["sender"], env["SECRET_KEY"]!),
             timestamp: DateTime.parse(msg["timestamp"]),
           ),
         );
@@ -180,9 +179,9 @@ class _ChatPageState extends State<ChatPage> {
     socket!.emit(
       "sendMsg",
       {
-        'content': encrypt(msg, dotenv.env["SECRET_KEY"]!),
-        'sender': encrypt(sender, dotenv.env["SECRET_KEY"]!),
-        'receiverChatID': encrypt(widget.room.id!, dotenv.env["SECRET_KEY"]!),
+        'content': encrypt(msg, env["SECRET_KEY"]!),
+        'sender': encrypt(sender, env["SECRET_KEY"]!),
+        'receiverChatID': encrypt(widget.room.id!, env["SECRET_KEY"]!),
         "timestamp": DateTime.now().toString(),
       },
     );

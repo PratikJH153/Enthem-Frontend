@@ -9,6 +9,7 @@ abstract class IUserService {
   Future<bool> updateUser(Map<String, dynamic> user);
   Future<bool> deleteUser(Map<String, dynamic> user);
   Future<bool> addInterests(String id, List<String> interests);
+  Future<bool> updateInterests(String id, List<String> interests);
   Future<List<UserModel>> getUsers(List<String> ids);
   Future<bool> checkUsernameExists(String username);
   Future<bool> checkInterestsAdded(String id);

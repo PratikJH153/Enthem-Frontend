@@ -1,18 +1,22 @@
-import 'package:enthem2frontend/interfaces/user.dart';
-import 'package:enthem2frontend/screens/auth/dob_screen.dart';
-import 'package:enthem2frontend/screens/auth/gender_screen.dart';
-import 'package:enthem2frontend/screens/auth/geolocation_screen.dart';
-import 'package:enthem2frontend/screens/auth/interests_screen.dart';
-import 'package:enthem2frontend/screens/auth/onboard_screen.dart';
-import 'package:enthem2frontend/screens/auth/splash_screen.dart';
-import 'package:enthem2frontend/screens/auth/username_screen.dart';
-import 'package:enthem2frontend/screens/auth/wrapper.dart';
-import 'package:enthem2frontend/screens/home/UserEntryPage.dart';
-import 'package:enthem2frontend/screens/home/find_friends_screen.dart';
-import 'package:enthem2frontend/screens/home/home_screen.dart';
-import 'package:enthem2frontend/screens/home/messages_screen.dart';
-import 'package:enthem2frontend/screens/profile/profile_screen.dart';
-import 'package:enthem2frontend/screens/home/group_chat_screen.dart';
+import 'package:enthem2frontend/models/user.dart';
+import 'package:enthem2frontend/screens/profile/edit_interests_screen.dart';
+import 'package:enthem2frontend/screens/profile/edit_profile_screen.dart';
+
+import '/interfaces/user.dart';
+import '/screens/auth/dob_screen.dart';
+import '/screens/auth/gender_screen.dart';
+import '/screens/auth/geolocation_screen.dart';
+import '/screens/auth/interests_screen.dart';
+import '/screens/auth/onboard_screen.dart';
+import '/screens/auth/splash_screen.dart';
+import '/screens/auth/username_screen.dart';
+import '/screens/auth/wrapper.dart';
+import '/screens/home/UserEntryPage.dart';
+import '/screens/home/find_friends_screen.dart';
+import '/screens/home/home_screen.dart';
+import '/screens/home/messages_screen.dart';
+import '/screens/profile/profile_screen.dart';
+import '/screens/home/group_chat_screen.dart';
 import 'package:flutter/material.dart';
 
 class Routes {
@@ -82,6 +86,17 @@ class Routes {
       case MessagesPage.routeID:
         return MaterialPageRoute(
           builder: (context) => const MessagesPage(),
+        );
+      case EditProfilePage.routeID:
+        return MaterialPageRoute(
+          builder: (context) => const EditProfilePage(),
+        );
+      case EditInterestsPage.routeID:
+        final UserModel userModel = settings.arguments as UserModel;
+        return MaterialPageRoute(
+          builder: (context) => EditInterestsPage(
+            user: userModel,
+          ),
         );
       default:
         return MaterialPageRoute(

@@ -5,7 +5,7 @@ class UserInterface {
   String? photoURL;
   String? gender;
   int? age;
-  List<dynamic>? interests;
+  List<String>? interests;
   double? latitude;
   double? longitude;
 

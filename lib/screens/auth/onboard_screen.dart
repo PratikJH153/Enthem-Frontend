@@ -132,10 +132,10 @@ class _OnboardPageState extends State<OnboardPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Spacer(),
-                  SizedBox(
+                  const SizedBox(
                     width: 260,
                     child: Column(
-                      children: const [
+                      children: [
                         Text(
                           "Meet learn & start",
                           style: TextStyle(

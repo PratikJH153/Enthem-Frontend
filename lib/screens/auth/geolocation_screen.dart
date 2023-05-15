@@ -165,9 +165,9 @@ class _GeoLocationPageState extends State<GeoLocationPage> {
                     Radius.circular(15),
                   ),
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Text(
                       "Continue",
                       style: TextStyle(

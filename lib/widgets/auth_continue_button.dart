@@ -6,11 +6,13 @@ class AuthContinueButton extends StatelessWidget {
   final String? des;
   final VoidCallback onTap;
   final bool isDisabled;
+  final String title;
 
   const AuthContinueButton({
     this.des,
     required this.isDisabled,
     required this.onTap,
+    this.title = "Continue",
     super.key,
   });
 
@@ -64,17 +66,17 @@ class AuthContinueButton extends StatelessWidget {
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Text(
-                    "Continue",
-                    style: TextStyle(
+                    title,
+                    style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
                       color: Colors.black,
                       fontFamily: "Grandis Extended",
                     ),
                   ),
-                  Icon(
+                  const Icon(
                     Icons.arrow_right_alt_rounded,
                     color: Colors.black,
                   )

@@ -24,7 +24,7 @@ class SettingsButton extends StatelessWidget {
             ),
           ),
         ),
-        onPressed: () {},
+        onPressed: onTap,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [Text(title), const Icon(CupertinoIcons.arrow_right)],

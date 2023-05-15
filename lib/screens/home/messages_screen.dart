@@ -1,6 +1,5 @@
 import 'package:enthem2frontend/screens/home/home_screen.dart';
 import 'package:enthem2frontend/views/working_feature_screen.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MessagesPage extends StatefulWidget {
@@ -20,20 +19,8 @@ class _MessagesPageState extends State<MessagesPage> {
             .pushNamedAndRemoveUntil(HomePage.routeID, (route) => false);
         return false;
       },
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                CupertinoIcons.question_circle_fill,
-                size: 30,
-              ),
-            ),
-          ],
-        ),
-        body: const WorkingFeatureScreen(),
+      child: const Scaffold(
+        body: WorkingFeatureScreen(),
       ),
     );
   }

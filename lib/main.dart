@@ -1,12 +1,13 @@
-import 'package:enthem2frontend/logic/bloc/internet/internet_bloc.dart';
-import 'package:enthem2frontend/logic/bloc/user/user_bloc.dart';
-import 'package:enthem2frontend/screens/auth/wrapper.dart';
-import 'package:enthem2frontend/utils/routes.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
+import 'logic/provider/friend_provider.dart';
+import 'logic/provider/rooms_provider.dart';
+import 'logic/provider/user_provider.dart';
+import 'screens/auth/wrapper.dart';
+import 'utils/routes.dart';
 import 'firebase_options.dart';
 import 'theme/theme.dart';
 
@@ -34,14 +35,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
+    return MultiProvider(
       providers: [
-        BlocProvider<InternetBloc>(
-          create: (_) => InternetBloc(),
-        ),
-        BlocProvider<UserBloc>(
-          create: (_) => UserBloc(),
-        ),
+        ChangeNotifierProvider(create: (_) => FriendProvider()),
+        ChangeNotifierProvider(create: (_) => UserDataProvider()),
+        ChangeNotifierProvider(create: (_) => RoomsProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
