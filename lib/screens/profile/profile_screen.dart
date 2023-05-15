@@ -1,18 +1,18 @@
-import 'package:enthem2frontend/constants/constants.dart';
-import 'package:enthem2frontend/helper/display_user_dp.dart';
-import 'package:enthem2frontend/screens/home/home_screen.dart';
 import 'package:enthem2frontend/screens/profile/edit_profile_screen.dart';
-import 'package:enthem2frontend/utils/encryption.dart';
-import 'package:enthem2frontend/widgets/custom_dialog_box.dart';
-import 'package:enthem2frontend/widgets/dialog_box_widget.dart';
 import 'package:enthem2frontend/widgets/own_room_tile_widget.dart';
+import 'package:provider/provider.dart';
 
+import '/logic/provider/user_provider.dart';
+import '/helper/display_user_dp.dart';
+import '/screens/home/home_screen.dart';
+import '/utils/encryption.dart';
+import '/widgets/custom_dialog_box.dart';
+import '/widgets/dialog_box_widget.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '/constants/page_padding.dart';
-import '/database/repositories/room_api_repository.dart';
 import '/firebase/sign_in_method.dart';
 import '/helper/error_constants.dart';
 import '/logic/repositories/user_api_repository.dart';
-import '/models/room.dart';
 import '/models/user.dart';
 import '/screens/auth/onboard_screen.dart';
 import '/theme/theme.dart';
@@ -20,12 +20,12 @@ import '/widgets/loading_widget.dart';
 import '/widgets/settings_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../services/debug_console.dart';
+import '/services/debug_console.dart';
 
 class ProfilePage extends StatefulWidget {
   static const routeID = "/profilepage";
-  final UserModel user;
-  const ProfilePage({required this.user, super.key});
+
+  const ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -34,17 +34,15 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final AuthService _authService = AuthService();
   final UserAPIRepository _userAPIRepository = UserAPIRepository();
-  final RoomAPIRepository _roomAPIRepository = RoomAPIRepository();
   static const String filename = "profile_screen.dart";
-  List<Room> rooms = [];
-  bool _isLoading = false;
   bool _isSettingsLoading = false;
   late int index1;
+  UserModel? _user;
 
   @override
   void initState() {
-    getRoomsByOwnerID();
-    index1 = (widget.user.interests!.length ~/ 2).floor();
+    _user = context.read<UserDataProvider>().userData;
+    index1 = (_user!.interests!.length ~/ 2).floor();
     super.initState();
   }
 
@@ -66,8 +64,8 @@ class _ProfilePageState extends State<ProfilePage> {
       });
       bool isDeleted = await _userAPIRepository.deleteUser({
         "id": encrypt(
-          widget.user.id!,
-          env["SECRET_KEY"]!,
+          _user!.id!,
+          dotenv.env["SECRET_KEY"]!,
         ),
       });
       if (isDeleted) {
@@ -100,25 +98,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  void getRoomsByOwnerID() async {
-    try {
-      setState(() {
-        _isLoading = true;
-      });
-      final data =
-          await _roomAPIRepository.getRoomsByOwnerID(ownerID: widget.user.id!);
-      setState(() {
-        rooms = data;
-        _isLoading = false;
-      });
-    } catch (err) {
-      errorSnackBar(context: context, error: ErrorState.serverError);
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
   Widget bottomPage() {
     return SingleChildScrollView(
       child: Container(
@@ -148,7 +127,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 onTap: () {
                   Navigator.of(context).pushNamed(
                     EditProfilePage.routeID,
-                    arguments: widget.user,
+                    arguments: _user,
                   );
                 },
               ),
@@ -271,224 +250,224 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    UserDataProvider userDataProvider = context.watch<UserDataProvider>();
+    List rooms = userDataProvider.rooms;
+
     return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil(HomePage.routeID, (route) => false);
-        return false;
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          actions: [
-            IconButton(
-              onPressed: () {
-                errorSnackBar(
-                    context: context, error: ErrorState.workingFeature);
-              },
-              icon: const Icon(
-                CupertinoIcons.share,
-                size: 25,
+        onWillPop: () async {
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil(HomePage.routeID, (route) => false);
+          return false;
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            actions: [
+              IconButton(
+                onPressed: () {
+                  errorSnackBar(
+                      context: context, error: ErrorState.workingFeature);
+                },
+                icon: const Icon(
+                  CupertinoIcons.share,
+                  size: 25,
+                ),
               ),
-            ),
-            IconButton(
-              onPressed: () {
-                showModalBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      return bottomPage();
-                    });
-              },
-              icon: const Icon(
-                CupertinoIcons.settings,
-                size: 25,
+              IconButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return bottomPage();
+                      });
+                },
+                icon: const Icon(
+                  CupertinoIcons.settings,
+                  size: 25,
+                ),
               ),
-            ),
-          ],
-        ),
-        body: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: kPagePadding,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      margin: const EdgeInsets.only(bottom: 15),
-                      decoration: const BoxDecoration(
-                        color: Color.fromARGB(255, 37, 36, 37),
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
+            ],
+          ),
+          body: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: kPagePadding,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        margin: const EdgeInsets.only(bottom: 15),
+                        decoration: const BoxDecoration(
+                          color: Color.fromARGB(255, 37, 36, 37),
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                        ),
+                        child: Text(
+                          displayUserPicture(_user!.username!),
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontFamily: "Poppins",
+                          ),
+                        ),
                       ),
-                      child: Text(
-                        displayUserPicture(widget.user.username!),
+                      Text(
+                        _user!.username!,
                         style: const TextStyle(
                           fontSize: 20,
                           fontFamily: "Poppins",
                         ),
                       ),
-                    ),
-                    Text(
-                      widget.user.username!,
-                      style: const TextStyle(
-                        fontSize: 30,
-                        fontFamily: "Poppins",
+                      Text(
+                        _user!.email!,
                       ),
-                    ),
-                    Text(
-                      widget.user.email!,
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      const Text(
+                        "Interests",
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.white54,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  children: [
+                    SizedBox(
+                      height: 35,
+                      child: ListView.builder(
+                        itemCount: index1,
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.only(left: 15),
+                        itemBuilder: (context, index) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 5,
+                            ),
+                            margin: const EdgeInsets.only(
+                              right: 10,
+                            ),
+                            alignment: Alignment.center,
+                            decoration: const BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(100),
+                              ),
+                              color: Colors.white24,
+                            ),
+                            child: Text(
+                              _user!.interests![index],
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                     const SizedBox(
                       height: 10,
                     ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    const Text(
-                      "Interests",
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        color: Colors.white54,
+                    SizedBox(
+                      height: 35,
+                      child: ListView.builder(
+                        itemCount: _user!.interests!.length - index1,
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.only(left: 15),
+                        itemBuilder: (context, index) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 5,
+                            ),
+                            margin: const EdgeInsets.only(
+                              right: 10,
+                            ),
+                            alignment: Alignment.center,
+                            decoration: const BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(100),
+                              ),
+                              color: Colors.white24,
+                            ),
+                            child: Text(
+                              _user!.interests![index + index1],
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
-                    const SizedBox(
-                      height: 15,
-                    ),
                   ],
                 ),
-              ),
-              Column(
-                children: [
-                  SizedBox(
-                    height: 35,
-                    child: ListView.builder(
-                      itemCount: index1,
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.only(left: 15),
-                      itemBuilder: (context, index) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 15,
-                            vertical: 5,
-                          ),
-                          margin: const EdgeInsets.only(
-                            right: 10,
-                          ),
-                          alignment: Alignment.center,
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(100),
-                            ),
-                            color: Colors.white24,
-                          ),
-                          child: Text(
-                            widget.user.interests![index],
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
+                Padding(
+                  padding: kPagePadding,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Rooms",
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: Colors.white54,
                             ),
                           ),
-                        );
-                      },
-                    ),
+                          TextButton(
+                            onPressed: () {},
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              textStyle: const TextStyle(
+                                fontSize: 14,
+                              ),
+                            ),
+                            child: const Text(
+                              "View All",
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  SizedBox(
-                    height: 35,
-                    child: ListView.builder(
-                      itemCount: widget.user.interests!.length - index1,
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.only(left: 15),
-                      itemBuilder: (context, index) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 15,
-                            vertical: 5,
-                          ),
-                          margin: const EdgeInsets.only(
-                            right: 10,
-                          ),
-                          alignment: Alignment.center,
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(100),
-                            ),
-                            color: Colors.white24,
-                          ),
-                          child: Text(
-                            widget.user.interests![index + index1],
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: kPagePadding,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "Rooms",
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            color: Colors.white54,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {},
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            textStyle: const TextStyle(
-                              fontSize: 14,
-                            ),
-                          ),
-                          child: const Text(
-                            "View All",
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
                 ),
-              ),
-              _isLoading
-                  ? const Center(child: LoadingWidget())
-                  : rooms.isEmpty
-                      ? const Text("No rooms created yet")
-                      : Expanded(
-                          child: ListView.builder(
-                            itemCount: rooms.length,
-                            itemBuilder: (context, index) {
-                              return OwnRoomTileWidget(
-                                user: widget.user,
-                                room: rooms[index],
-                                distance: "0.0",
-                              );
-                            },
-                          ),
+                rooms.isEmpty
+                    ? const Text("No rooms created yet")
+                    : Expanded(
+                        child: ListView.builder(
+                          itemCount: rooms.length,
+                          itemBuilder: (context, index) {
+                            return OwnRoomTileWidget(
+                              user: _user!,
+                              room: rooms[index],
+                              distance: "0.0",
+                            );
+                          },
                         ),
-            ],
+                      ),
+              ],
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 }

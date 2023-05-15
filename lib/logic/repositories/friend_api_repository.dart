@@ -1,9 +1,8 @@
 import 'package:enthem2frontend/logic/contracts/friend_contract.dart';
-import 'package:enthem2frontend/logic/provider/friend_api_provider.dart';
 import 'package:enthem2frontend/models/friend.dart';
 
 class FriendAPIRepository extends FriendContract {
-  final _provider = FriendAPIProvider();
+  final _provider = FriendAPIRepository();
 
   @override
   void close() {

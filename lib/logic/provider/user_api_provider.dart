@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:enthem2frontend/constants/constants.dart';
-import 'package:enthem2frontend/logic/contracts/user_contract.dart';
-import 'package:enthem2frontend/models/user.dart';
-import 'package:enthem2frontend/services/api_options.dart';
-import 'package:enthem2frontend/services/debug_console.dart';
-import 'package:enthem2frontend/utils/encryption.dart';
+import '/constants/constants.dart';
+import '/logic/contracts/user_contract.dart';
+import '/models/user.dart';
+import '/services/api_options.dart';
+import '/services/debug_console.dart';
+import '/utils/encryption.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserAPIProvider extends IUserService {

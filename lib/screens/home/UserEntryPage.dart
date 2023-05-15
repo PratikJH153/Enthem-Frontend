@@ -1,6 +1,8 @@
 // ignore_for_file: file_names
 
 import 'package:enthem2frontend/helper/error_constants.dart';
+import 'package:enthem2frontend/logic/provider/global_data_provider.dart';
+import 'package:enthem2frontend/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 
 import '/firebase/sign_in_method.dart';
@@ -34,6 +36,29 @@ class _UserEntryPageState extends State<UserEntryPage> {
     super.initState();
   }
 
+  void _initializeProviders() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await GlobalDataProvider.initializeProviders(context);
+    } on Exception catch (e) {
+      debugError(e.toString(), filename);
+      showSnackBar(
+        context: context,
+        status: "failure",
+        title: "Server issue!",
+        des: "Couldn't connect to the server",
+      );
+      rethrow;
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   Future<void> checkUserStatus() async {
     try {
       setState(() {
@@ -56,6 +81,8 @@ class _UserEntryPageState extends State<UserEntryPage> {
             setState(() {
               _isUserInterestsExists = true;
             });
+
+            _initializeProviders();
           }
         }
       }

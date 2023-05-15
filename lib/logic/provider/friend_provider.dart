@@ -2,20 +2,30 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:enthem2frontend/utils/encryption.dart';
+import 'package:enthem2frontend/widgets/loading_widget.dart';
+import 'package:flutter/material.dart';
 import '/constants/constants.dart';
 import '/models/friend.dart';
 import '/services/api_options.dart';
 import '/services/debug_console.dart';
 import '../contracts/friend_contract.dart';
 
-class FriendAPIProvider extends FriendContract {
+class FriendProvider extends ChangeNotifier implements FriendContract {
   final Dio _dio = Dio();
   final String _url = '$baseUrl/user';
-  static const String filename = "friend_api_provider.dart";
+  static const String filename = "friend_provider.dart";
+
+  AsyncState nearbyAsyncState = AsyncState.isLoading;
+  AsyncState forYouAsyncState = AsyncState.isLoading;
+
+  List<Friend> nearbyList = [];
+  List<Friend> forYouList = [];
 
   @override
-  Future<List<Friend>> nearby(String userID, int offset) async {
+  Future<void> nearby(String userID, int offset) async {
     try {
+      setNearbyLoading();
+
       final jsonData = {"id": encrypt(userID, env["SECRET_KEY"]!)};
       Response response = await _dio.get(
         "$_url/nearby",
@@ -30,16 +40,22 @@ class FriendAPIProvider extends FriendContract {
       debugData(data["data"], filename);
       data["data"].forEach((e) => recommendList.add(Friend.fromJson(e)));
 
-      return recommendList;
+      nearbyList = recommendList;
+
+      setNearbyLoading(isLoading: false);
     } catch (error) {
       debugError(error.toString(), filename);
+      nearbyAsyncState = AsyncState.wentWrong;
+      notifyListeners();
       rethrow;
     }
   }
 
   @override
-  Future<List<Friend>> foryou(String userID, int offset) async {
+  Future<void> foryou(String userID, int offset) async {
     try {
+      setForYouLoading();
+
       final jsonData = {"id": encrypt(userID, env["SECRET_KEY"]!)};
       Response response = await _dio.get(
         "$_url/foryou",
@@ -54,11 +70,25 @@ class FriendAPIProvider extends FriendContract {
       debugData(data["data"], filename);
       data["data"].forEach((e) => recommendList.add(Friend.fromJson(e)));
 
-      return recommendList;
+      forYouList = recommendList;
+
+      setForYouLoading(isLoading: false);
     } catch (error) {
       debugError(error.toString(), filename);
+      forYouAsyncState = AsyncState.wentWrong;
+      notifyListeners();
       rethrow;
     }
+  }
+
+  void setNearbyLoading({bool isLoading = true}) {
+    nearbyAsyncState = isLoading ? AsyncState.isLoading : AsyncState.hasLoaded;
+    notifyListeners();
+  }
+
+  void setForYouLoading({bool isLoading = true}) {
+    forYouAsyncState = isLoading ? AsyncState.isLoading : AsyncState.hasLoaded;
+    notifyListeners();
   }
 
   @override

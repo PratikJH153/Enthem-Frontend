@@ -1,22 +1,22 @@
-import 'package:enthem2frontend/database/repositories/room_api_repository.dart';
-import 'package:enthem2frontend/helper/compute_distance.dart';
-import 'package:enthem2frontend/helper/error_constants.dart';
-import 'package:enthem2frontend/models/room.dart';
-import 'package:enthem2frontend/models/user.dart';
-import 'package:enthem2frontend/services/debug_console.dart';
-import 'package:enthem2frontend/theme/theme.dart';
-import 'package:enthem2frontend/widgets/loading_widget.dart';
-import 'package:enthem2frontend/widgets/primary_button.dart';
-import 'package:enthem2frontend/widgets/room_tile.dart';
-import 'package:enthem2frontend/widgets/shaded_list_widget.dart';
+import '/database/repositories/room_api_repository.dart';
+import '/helper/compute_distance.dart';
+import '/helper/error_constants.dart';
+import '/logic/provider/user_provider.dart';
+import '/models/room.dart';
+import '/models/user.dart';
+import '/services/debug_console.dart';
+import '/theme/theme.dart';
+import '/widgets/primary_button.dart';
+import '/widgets/room_tile.dart';
+import '/widgets/loading_widget.dart';
+import '/widgets/shaded_list_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 
 class SearchRoomsView extends StatefulWidget {
-  final UserModel user;
   const SearchRoomsView({
-    required this.user,
     super.key,
   });
 
@@ -71,6 +71,9 @@ class _SearchRoomsViewState extends State<SearchRoomsView> {
 
   @override
   Widget build(BuildContext context) {
+    UserDataProvider userDataProvider = context.read<UserDataProvider>();
+    UserModel user = userDataProvider.userData!;
+
     return Container(
       padding: const EdgeInsets.only(
         top: 50,
@@ -221,13 +224,13 @@ class _SearchRoomsViewState extends State<SearchRoomsView> {
                                   final room = searhList[index];
                                   final distance = computeDistance(
                                     [
-                                      widget.user.longitude!,
-                                      widget.user.latitude!
+                                      user.longitude!,
+                                      user.latitude!
                                     ],
                                     searhList[index].coordinates,
                                   ).toStringAsFixed(2);
                                   return RoomTileWidget(
-                                    user: widget.user,
+                                    user: user,
                                     room: room,
                                     distance: distance,
                                   );

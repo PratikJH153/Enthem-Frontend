@@ -1,5 +1,6 @@
 import 'package:enthem2frontend/constants/page_padding.dart';
 import 'package:enthem2frontend/helper/error_constants.dart';
+import 'package:enthem2frontend/logic/provider/global_data_provider.dart';
 import 'package:enthem2frontend/logic/repositories/user_api_repository.dart';
 import 'package:enthem2frontend/models/user.dart';
 import 'package:enthem2frontend/services/debug_console.dart';
@@ -58,6 +59,7 @@ class _EditInterestsPageState extends State<EditInterestsPage> {
             title: "Interests updated successfully!",
             des: "",
           );
+          GlobalDataProvider.resetUserDataProvider(context);
         }
       } else {
         if (context.mounted) {

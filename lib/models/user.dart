@@ -67,7 +67,9 @@ class UserModel extends Equatable {
       photoURL: userData["photoURL"].toString(),
       gender: userData["gender"],
       age: int.parse(userData["age"].toString()),
-      interests: userData["interests"].whereType<String>().toList(),
+      interests: userData["interests"] != null
+          ? userData["interests"].whereType<String>().toList()
+          : userData["interests"],
       latitude: userData["latitude"] is Map
           ? double.parse(userData["latitude"]["low"].toString())
           : userData["latitude"] == null

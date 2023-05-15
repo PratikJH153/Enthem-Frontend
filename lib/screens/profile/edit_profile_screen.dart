@@ -2,6 +2,8 @@ import 'package:enthem2frontend/constants/constants.dart';
 import 'package:enthem2frontend/constants/page_padding.dart';
 import 'package:enthem2frontend/helper/error_constants.dart';
 import 'package:enthem2frontend/helper/helpers.dart';
+import 'package:enthem2frontend/logic/provider/global_data_provider.dart';
+import 'package:enthem2frontend/logic/provider/user_provider.dart';
 import 'package:enthem2frontend/logic/repositories/user_api_repository.dart';
 import 'package:enthem2frontend/models/user.dart';
 import 'package:enthem2frontend/screens/home/home_screen.dart';
@@ -14,12 +16,11 @@ import 'package:enthem2frontend/widgets/custom_snackbar.dart';
 import 'package:enthem2frontend/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
 
 class EditProfilePage extends StatefulWidget {
-  final UserModel user;
   static const routeID = "/editprofilepage";
   const EditProfilePage({
-    required this.user,
     super.key,
   });
 
@@ -35,11 +36,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Position? _currentPosition;
   late int index1;
   bool _isLoading = false;
+  UserModel? user;
 
   @override
   void initState() {
-    _usernameController.text = widget.user.username!;
-    index1 = (widget.user.interests!.length ~/ 2).floor();
+    user = context.read<UserDataProvider>().userData;
+    _usernameController.text = user!.username!;
+    index1 = (user!.interests!.length ~/ 2).floor();
     super.initState();
   }
 
@@ -84,7 +87,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Future<void> updateUser() async {
     try {
-      if (widget.user.username != _usernameController.text.trim()) {
+      if (user!.username != _usernameController.text.trim()) {
         final checkUsernameExists = await _userAPIRepository
             .checkUsernameExists(_usernameController.text.trim());
         if (checkUsernameExists) {
@@ -93,7 +96,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           }
         }
         final data = await _userAPIRepository.updateUser({
-          "id": encrypt(widget.user.id!, env["SECRET_KEY"]!),
+          "id": encrypt(user!.id!, env["SECRET_KEY"]!),
           "username": _usernameController.text.trim(),
         });
         if (data) {
@@ -124,12 +127,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
     if (_currentPosition != null) {
       try {
         await _userAPIRepository.updateUser({
-          "id": encrypt(widget.user.id!, env["SECRET_KEY"]!),
+          "id": encrypt(user!.id!, env["SECRET_KEY"]!),
           "latitude": _currentPosition?.latitude,
           "longitude": _currentPosition?.longitude,
         });
+        if (context.mounted) {
+          GlobalDataProvider.resetUserDataProvider(context);
+        }
         setState(() {
-          widget.user.updateLocation(
+          user!.updateLocation(
               _currentPosition?.latitude, _currentPosition?.longitude);
           _isLoading = false;
         });
@@ -151,12 +157,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
     });
     try {
       await _userAPIRepository.updateUser({
-        "id": encrypt(widget.user.id!, env["SECRET_KEY"]!),
+        "id": encrypt(user!.id!, env["SECRET_KEY"]!),
         "latitude": -90.0,
         "longitude": 0,
       });
       setState(() {
-        widget.user.updateLocation(-90.0, 0);
+        user!.updateLocation(-90.0, 0);
         _isLoading = false;
       });
     } catch (err) {
@@ -279,7 +285,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       onPressed: () {
                         Navigator.of(context).pushNamed(
                           EditInterestsPage.routeID,
-                          arguments: widget.user,
+                          arguments: user!,
                         );
                       },
                       child: const Text("Edit Interests"),
@@ -317,7 +323,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         color: Colors.white24,
                       ),
                       child: Text(
-                        widget.user.interests![index],
+                        user!.interests![index],
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -334,7 +340,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               SizedBox(
                 height: 35,
                 child: ListView.builder(
-                  itemCount: widget.user.interests!.length - index1,
+                  itemCount: user!.interests!.length - index1,
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.only(left: 15),
                   itemBuilder: (context, index) {
@@ -354,7 +360,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         color: Colors.white24,
                       ),
                       child: Text(
-                        widget.user.interests![index + index1],
+                        user!.interests![index + index1],
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

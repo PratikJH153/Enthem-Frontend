@@ -1,21 +1,23 @@
-import 'package:enthem2frontend/constants/page_padding.dart';
-import 'package:enthem2frontend/models/room.dart';
-import 'package:enthem2frontend/models/user.dart';
-import 'package:enthem2frontend/screens/home/home_screen.dart';
-import 'package:enthem2frontend/screens/room/near_rooms.dart';
-import 'package:enthem2frontend/screens/room/world_rooms.dart';
-import 'package:enthem2frontend/theme/theme.dart';
-import 'package:enthem2frontend/views/search_rooms_view.dart';
-import 'package:enthem2frontend/widgets/custom_dialog_box.dart';
-import 'package:enthem2frontend/widgets/dialog_box_widget.dart';
-import 'package:enthem2frontend/widgets/explore_interest_widget.dart';
+import '/logic/provider/user_provider.dart';
+import '/constants/page_padding.dart';
+import '/models/room.dart';
+import '/models/user.dart';
+import '/screens/home/home_screen.dart';
+import '/screens/room/near_rooms.dart';
+import '/screens/room/world_rooms.dart';
+import '/theme/theme.dart';
+import '/views/search_rooms_view.dart';
+import '/widgets/custom_dialog_box.dart';
+import '/widgets/dialog_box_widget.dart';
+import '/widgets/explore_interest_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class GroupChatPage extends StatefulWidget {
   static const routeID = "/groupchatpage";
-  final UserModel? user;
-  const GroupChatPage({this.user, super.key});
+
+  const GroupChatPage({super.key});
 
   @override
   State<GroupChatPage> createState() => _GroupChatPageState();
@@ -52,7 +54,10 @@ class _GroupChatPageState extends State<GroupChatPage> {
   }
 
   List<Widget> roomPagesButton() {
-    return widget.user!.isLocationGiven
+    UserDataProvider userDataProvider = context.read<UserDataProvider>();
+    UserModel user = userDataProvider.userData!;
+
+    return user.isLocationGiven
         ? [
             ExploreInterestWidget(
               iconData: CupertinoIcons.location_circle_fill,
@@ -109,23 +114,12 @@ class _GroupChatPageState extends State<GroupChatPage> {
   }
 
   List<Widget> roomPages() {
-    return widget.user!.isLocationGiven
-        ? [
-            NearRoomsPage(
-              user: widget.user!,
-            ),
-            WorldRoomsPage(
-              user: widget.user!,
-            )
-          ]
-        : [
-            WorldRoomsPage(
-              user: widget.user!,
-            ),
-            NearRoomsPage(
-              user: widget.user!,
-            ),
-          ];
+    UserDataProvider userDataProvider = context.read<UserDataProvider>();
+    UserModel user = userDataProvider.userData!;
+
+    return user.isLocationGiven
+        ? const [NearRoomsPage(), WorldRoomsPage()]
+        : const [WorldRoomsPage(), NearRoomsPage()];
   }
 
   @override
@@ -160,9 +154,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
                           isScrollControlled: true,
                           backgroundColor: backgroundColor,
                           builder: (context) {
-                            return SearchRoomsView(
-                              user: widget.user!,
-                            );
+                            return const SearchRoomsView();
                           },
                         );
                       },

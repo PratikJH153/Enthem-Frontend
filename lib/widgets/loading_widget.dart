@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+enum AsyncState {
+  isLoading,
+  hasLoaded,
+  wentWrong
+}
+
 class LoadingWidget extends StatelessWidget {
   const LoadingWidget({super.key});
 
@@ -25,6 +31,19 @@ class LoadingWidget extends StatelessWidget {
           backgroundColor: Colors.black12,
           color: Color.fromARGB(255, 120, 152, 255),
         ),
+      ),
+    );
+  }
+}
+
+class WentWrongPage extends StatelessWidget {
+  const WentWrongPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Text("Something went wrong!"),
       ),
     );
   }
