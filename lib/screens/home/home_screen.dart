@@ -49,6 +49,7 @@ class _HomePageState extends State<HomePage> {
           createdAt: DateTime.now(),
         );
         await _roomApiRepository.addRoom(room);
+        setState(() {});
         if (context.mounted) {
           myfocus.unfocus();
           showSnackBar(

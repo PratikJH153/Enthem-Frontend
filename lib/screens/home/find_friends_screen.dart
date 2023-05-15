@@ -11,10 +11,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FindFriendsPage extends StatefulWidget {
   static const routeID = "/findfriendspage";
-  final UserModel? user;
+  final UserModel user;
 
   const FindFriendsPage({
-    this.user,
+    required this.user,
     super.key,
   });
 
@@ -110,15 +110,15 @@ class _FindFriendsPageState extends State<FindFriendsPage> {
                       BlocProvider<ForYouBloc>(
                         create: (_) => ForYouBloc(),
                         child: SliderViewRecommendation(
-                          userID: widget.user!.id!,
-                          isLocationGiven: widget.user!.isLocationGiven,
+                          userID: widget.user.id!,
+                          isLocationGiven: widget.user.isLocationGiven,
                         ),
                       ),
                       BlocProvider<NearYouBloc>(
                         create: (_) => NearYouBloc(),
                         child: SliderViewRecommendationNear(
-                          userID: widget.user!.id!,
-                          isLocationGiven: widget.user!.isLocationGiven,
+                          userID: widget.user.id!,
+                          isLocationGiven: widget.user.isLocationGiven,
                         ),
                       ),
                     ],

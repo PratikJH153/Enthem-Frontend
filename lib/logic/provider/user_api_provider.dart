@@ -8,7 +8,6 @@ import 'package:enthem2frontend/services/api_options.dart';
 import 'package:enthem2frontend/services/debug_console.dart';
 import 'package:enthem2frontend/utils/encryption.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class UserAPIProvider extends IUserService {
   final Dio _dio = Dio();
@@ -53,7 +52,7 @@ class UserAPIProvider extends IUserService {
   @override
   Future<bool> checkUserExists(String id) async {
     try {
-      final data = json.encode({"id": encrypt(id, dotenv.env["SECRET_KEY"]!)});
+      final data = json.encode({"id": encrypt(id, env["SECRET_KEY"]!)});
       debugData(data.toString(), filename);
       Response response = await _dio.get(
         "$_url/exists",
@@ -75,7 +74,7 @@ class UserAPIProvider extends IUserService {
   @override
   Future<UserModel> getUser(String id) async {
     try {
-      final data = json.encode({"id": encrypt(id, dotenv.env["SECRET_KEY"]!)});
+      final data = json.encode({"id": encrypt(id, env["SECRET_KEY"]!)});
       debugData(data.toString(), filename);
       Response response = await _dio.get(
         _url,
@@ -165,10 +164,8 @@ class UserAPIProvider extends IUserService {
   @override
   Future<bool> addInterests(String id, List<String> interests) async {
     try {
-      final data = json.encode({
-        "id": encrypt(id, dotenv.env["SECRET_KEY"]!),
-        "interests": interests
-      });
+      final data = json.encode(
+          {"id": encrypt(id, env["SECRET_KEY"]!), "interests": interests});
       debugData(data.toString(), filename);
       Response response = await _dio.post(
         "$_url/interests",
@@ -190,7 +187,7 @@ class UserAPIProvider extends IUserService {
   @override
   Future<bool> checkInterestsAdded(String id) async {
     try {
-      final data = json.encode({"id": encrypt(id, dotenv.env["SECRET_KEY"]!)});
+      final data = json.encode({"id": encrypt(id, env["SECRET_KEY"]!)});
       debugData(data.toString(), filename);
       Response response = await _dio.get(
         "$_url/interests",
@@ -224,7 +221,7 @@ class UserAPIProvider extends IUserService {
         "id": ids
             .toSet()
             .toList()
-            .map((e) => encrypt(e, dotenv.env["SECRET_KEY"]!))
+            .map((e) => encrypt(e, env["SECRET_KEY"]!))
             .toList(),
       });
       debugData(data.toString(), filename);
@@ -239,6 +236,31 @@ class UserAPIProvider extends IUserService {
       userData["data"]
           .forEach((user) => usersList.add(UserModel.fromJson(user)));
       return usersList;
+    } catch (error) {
+      debugError(error.toString(), filename);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> updateInterests(String id, List<String> interests) async {
+    try {
+      final data = json.encode(
+          {"id": encrypt(id, env["SECRET_KEY"]!), "interests": interests});
+      debugData(data.toString(), filename);
+      Response response = await _dio.put(
+        "$_url/interests",
+        data: data,
+        options: getOptions(),
+      );
+      debugData(response.toString(), filename);
+      if (response.statusCode == 200) {
+        return true;
+      } else if (response.statusCode == 404) {
+        return false;
+      } else {
+        throw Error();
+      }
     } catch (error) {
       debugError(error.toString(), filename);
       rethrow;

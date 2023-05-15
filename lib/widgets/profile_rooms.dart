@@ -14,9 +14,6 @@ class ProfileRoomsWidget extends StatelessWidget {
         right: 15,
         top: 20,
       ),
-      height: 200,
-      width: 200,
-      margin: const EdgeInsets.only(right: 10),
       decoration: const BoxDecoration(
         color: Color.fromARGB(255, 37, 36, 37),
         borderRadius: BorderRadius.all(Radius.circular(20)),

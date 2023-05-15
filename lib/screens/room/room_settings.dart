@@ -134,14 +134,7 @@ class _RoomSettingsState extends State<RoomSettings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          // IconButton(
-          //   onPressed: () {},
-          //   icon: const Icon(Icons.more_vert),
-          // ),
-        ],
-      ),
+      appBar: AppBar(),
       body: _isloading
           ? const LoadingWidget()
           : Padding(
@@ -251,7 +244,6 @@ class _RoomSettingsState extends State<RoomSettings> {
                     child: ListView.builder(
                       itemCount: _participants.length,
                       itemBuilder: (context, index) {
-                        print(_participants);
                         final participant = _participants[index];
                         return ChatParticipantTileWidget(
                           participant: participant,

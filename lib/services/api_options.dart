@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:enthem2frontend/constants/constants.dart';
 
 Options getOptions() {
   return Options(
     headers: {
-      "Authorization": dotenv.env["BEARER_TOKEN"],
+      "Authorization": env["BEARER_TOKEN"],
     },
     responseType: ResponseType.json,
     contentType: "application/json",

@@ -1,4 +1,5 @@
 import 'package:enthem2frontend/interfaces/user.dart';
+import 'package:enthem2frontend/models/user.dart';
 import 'package:enthem2frontend/screens/auth/dob_screen.dart';
 import 'package:enthem2frontend/screens/auth/gender_screen.dart';
 import 'package:enthem2frontend/screens/auth/geolocation_screen.dart';
@@ -11,6 +12,8 @@ import 'package:enthem2frontend/screens/home/UserEntryPage.dart';
 import 'package:enthem2frontend/screens/home/find_friends_screen.dart';
 import 'package:enthem2frontend/screens/home/home_screen.dart';
 import 'package:enthem2frontend/screens/home/messages_screen.dart';
+import 'package:enthem2frontend/screens/profile/edit_interests_screen.dart';
+import 'package:enthem2frontend/screens/profile/edit_profile_screen.dart';
 import 'package:enthem2frontend/screens/profile/profile_screen.dart';
 import 'package:enthem2frontend/screens/home/group_chat_screen.dart';
 import 'package:flutter/material.dart';
@@ -56,16 +59,20 @@ class Routes {
           ),
         );
       case FindFriendsPage.routeID:
+        final UserModel userModel = settings.arguments as UserModel;
         return MaterialPageRoute(
-          builder: (context) => const FindFriendsPage(),
+          builder: (context) => FindFriendsPage(
+            user: userModel,
+          ),
         );
       case GroupChatPage.routeID:
         return MaterialPageRoute(
           builder: (context) => const GroupChatPage(),
         );
       case ProfilePage.routeID:
+        final UserModel userModel = settings.arguments as UserModel;
         return MaterialPageRoute(
-          builder: (context) => const ProfilePage(),
+          builder: (context) => ProfilePage(user: userModel),
         );
       case DOBPage.routeID:
         final UserInterface userInterface = settings.arguments as UserInterface;
@@ -82,6 +89,20 @@ class Routes {
       case MessagesPage.routeID:
         return MaterialPageRoute(
           builder: (context) => const MessagesPage(),
+        );
+      case EditProfilePage.routeID:
+        final UserModel userModel = settings.arguments as UserModel;
+        return MaterialPageRoute(
+          builder: (context) => EditProfilePage(
+            user: userModel,
+          ),
+        );
+      case EditInterestsPage.routeID:
+        final UserModel userModel = settings.arguments as UserModel;
+        return MaterialPageRoute(
+          builder: (context) => EditInterestsPage(
+            user: userModel,
+          ),
         );
       default:
         return MaterialPageRoute(

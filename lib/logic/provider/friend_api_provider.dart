@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:enthem2frontend/utils/encryption.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '/constants/constants.dart';
 import '/models/friend.dart';
 import '/services/api_options.dart';
@@ -17,7 +16,7 @@ class FriendAPIProvider extends FriendContract {
   @override
   Future<List<Friend>> nearby(String userID, int offset) async {
     try {
-      final jsonData = {"id": encrypt(userID, dotenv.env["SECRET_KEY"]!)};
+      final jsonData = {"id": encrypt(userID, env["SECRET_KEY"]!)};
       Response response = await _dio.get(
         "$_url/nearby",
         data: json.encode(jsonData),
@@ -41,7 +40,7 @@ class FriendAPIProvider extends FriendContract {
   @override
   Future<List<Friend>> foryou(String userID, int offset) async {
     try {
-      final jsonData = {"id": encrypt(userID, dotenv.env["SECRET_KEY"]!)};
+      final jsonData = {"id": encrypt(userID, env["SECRET_KEY"]!)};
       Response response = await _dio.get(
         "$_url/foryou",
         data: json.encode(jsonData),
@@ -65,5 +64,23 @@ class FriendAPIProvider extends FriendContract {
   @override
   void close() {
     _dio.close();
+  }
+
+  @override
+  Future<bool> dislikeFriend(String userID) {
+    // TODO: implement dislikeFriend
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> likeFriend(String userID) {
+    // TODO: implement likeFriend
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> createChat(String userID) {
+    // TODO: implement createChat
+    throw UnimplementedError();
   }
 }

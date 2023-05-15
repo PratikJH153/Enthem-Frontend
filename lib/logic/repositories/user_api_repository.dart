@@ -56,8 +56,13 @@ class UserAPIRepository extends IUserService {
   }
 
   @override
-  Future<List<UserModel>> getUsers(List<String> ids) {
-    return _provider.getUsers(ids);
+  Future<List<UserModel>> getUsers(List<String> ids) async {
+    return await _provider.getUsers(ids);
+  }
+
+  @override
+  Future<bool> updateInterests(String id, List<String> interests) async {
+    return await _provider.updateInterests(id, interests);
   }
   // @override
   // Future<bool> checkUserExistsSQL(String id) {
