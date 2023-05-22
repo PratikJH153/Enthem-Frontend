@@ -22,7 +22,7 @@ class UserEntryPage extends StatefulWidget {
 }
 
 class _UserEntryPageState extends State<UserEntryPage> {
-  static const String filename = "wrapper.dart";
+  static const String filename = "userEntryPage.dart";
   final AuthService _authService = AuthService();
   final UserAPIRepository _apiRepository = UserAPIRepository();
   bool _isLoading = false;

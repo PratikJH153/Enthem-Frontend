@@ -3,9 +3,8 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:enthem2frontend/constants/constants.dart';
 import 'package:enthem2frontend/database/contracts/chat_contract.dart';
-import 'package:enthem2frontend/models/user.dart';
-import 'package:enthem2frontend/models/room.dart';
-import 'package:enthem2frontend/models/message.dart';
+import 'package:enthem2frontend/logic/provider/user_api_provider.dart';
+import 'package:enthem2frontend/models/chat.dart';
 import 'package:enthem2frontend/services/api_options.dart';
 import 'package:enthem2frontend/services/debug_console.dart';
 
@@ -14,10 +13,32 @@ class ChatAPIProvider implements ChatContract {
   final String _url = '$baseUrl/chat';
   static const String filename = "chat_api_provider.dart";
 
+  final UserAPIProvider _userAPIProvider = UserAPIProvider();
+
   @override
-  Future<bool> createChat(Room room) async {
+  Future<List<Chat>> getUserChats() async {
     try {
-      final jsonData = room.toJson();
+      final jsonData = {"id": _userAPIProvider.getUserID()};
+      Response response = await _dio.get(
+        _url,
+        data: json.encode(jsonData),
+        options: getOptions(),
+      );
+      final data = json.decode(response.toString());
+      debugData(data["data"], filename);
+      final List<Chat> chatsList = [];
+      data["data"].forEach((chat) => chatsList.add(Chat.fromJson(chat)));
+      return chatsList;
+    } catch (error) {
+      debugError(error.toString(), filename);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> createChat(Chat chat) async {
+    try {
+      final jsonData = chat.toJson();
       Response response = await _dio.post(
         _url,
         data: json.encode(jsonData),
@@ -34,26 +55,14 @@ class ChatAPIProvider implements ChatContract {
   }
 
   @override
-  Future<List<Message>> getMessages(String roomID) {
-    // TODO: implement getMessages
+  Future<bool> blockChat(Chat chat) {
+    // TODO: implement blockChat
     throw UnimplementedError();
   }
 
   @override
-  Future<Room> getRoom(String chatID) {
-    // TODO: implement getRoom
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<UserModel>> getUserChats() {
-    // TODO: implement getUserChats
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<bool> sendMessage(Map<String, dynamic> message) {
-    // TODO: implement sendMessage
+  Future<bool> unblockChat(Chat chat) {
+    // TODO: implement unblockChat
     throw UnimplementedError();
   }
 }

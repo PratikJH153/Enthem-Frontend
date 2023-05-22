@@ -1,11 +1,8 @@
-import 'package:enthem2frontend/models/message.dart';
-import 'package:enthem2frontend/models/room.dart';
-import 'package:enthem2frontend/models/user.dart';
+import 'package:enthem2frontend/models/chat.dart';
 
 abstract class ChatContract {
-  Future<List<UserModel>> getUserChats();
-  Future<Room> getRoom(String chatID);
-  Future<List<Message>> getMessages(String roomID);
-  Future<bool> createChat(Room room);
-  Future<bool> sendMessage(Map<String, dynamic> message);
+  Future<List<Chat>> getUserChats();
+  Future<bool> createChat(Chat chat);
+  Future<bool> blockChat(Chat chat);
+  Future<bool> unblockChat(Chat chat);
 }
