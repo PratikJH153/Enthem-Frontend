@@ -26,7 +26,6 @@ class _InterestsPageState extends State<InterestsPage> {
   final UserAPIRepository _apiRepository = UserAPIRepository();
 
   void navigateToHomePage() async {
-    debugData(widget.userModel.toString(), filename);
     Navigator.of(context).pushNamedAndRemoveUntil(
       HomePage.routeID,
       (route) => false,
@@ -53,6 +52,7 @@ class _InterestsPageState extends State<InterestsPage> {
         id,
         selectedInterests,
       );
+      debugData(data, filename);
       if (data) {
         navigateToHomePage();
       } else {
