@@ -1,49 +1,49 @@
 {
   "project_info": {
-    "project_number": "451222890254",
-    "project_id": "enthem-2",
-    "storage_bucket": "enthem-2.appspot.com"
+    "project_number": "889829470702",
+    "project_id": "enthem2-e9286",
+    "storage_bucket": "enthem2-e9286.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:451222890254:android:39da23825d2209635bd95f",
+        "mobilesdk_app_id": "1:889829470702:android:024faf898cf505816adeff",
         "android_client_info": {
-          "package_name": "com.example.enthem2frontend"
+          "package_name": "com.haum.enthem"
         }
       },
       "oauth_client": [
         {
-          "client_id": "451222890254-6en7edjqha40l9qihr4cjnlpijf7bvch.apps.googleusercontent.com",
+          "client_id": "889829470702-68b6fnd69q635bce111c7f7nlopr16o2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.enthem2frontend",
+            "package_name": "com.haum.enthem",
             "certificate_hash": "94b21f2e7070202aa66434dc800f6ea546f30145"
           }
         },
         {
-          "client_id": "451222890254-8vcdick7sd26ebb7r3b4rd4ft8uutvo0.apps.googleusercontent.com",
+          "client_id": "889829470702-kqgmqriqdtjnqeospefl2c05cqc77ofk.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.enthem2frontend",
+            "package_name": "com.haum.enthem",
             "certificate_hash": "dc02d06faa90e630b07930b0315c2fa5e6737756"
           }
         },
         {
-          "client_id": "451222890254-d1lc8f13saiqkgi8d1ki5ao5d2o51man.apps.googleusercontent.com",
+          "client_id": "889829470702-nc544u28drsbadcslnve36jdo0j6e4it.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBcoTbfDG_7lUdWM3DG8mSfJ3b-W9BmkIE"
+          "current_key": "AIzaSyD-4IuUHYPpjN7HQFoBScJ7S97NhRrwQ9o"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "451222890254-9ihub16crqaif0688hbo21iiihc03kk2.apps.googleusercontent.com",
+              "client_id": "889829470702-nc544u28drsbadcslnve36jdo0j6e4it.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
