@@ -33,9 +33,9 @@ class FindMoreWidget extends StatelessWidget {
             ],
           ),
           alignment: Alignment.center,
-          child: const Column(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            children: const [
               Icon(
                 CupertinoIcons.person_2_alt,
                 size: 60,

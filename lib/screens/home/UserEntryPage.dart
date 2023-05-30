@@ -32,31 +32,9 @@ class _UserEntryPageState extends State<UserEntryPage> {
 
   @override
   void initState() {
+    print("User entry page called!");
     checkUserStatus();
     super.initState();
-  }
-
-  void _initializeProviders() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      await GlobalDataProvider.initializeProviders(context);
-    } on Exception catch (e) {
-      debugError(e.toString(), filename);
-      showSnackBar(
-        context: context,
-        status: "failure",
-        title: "Server issue!",
-        des: "Couldn't connect to the server",
-      );
-      rethrow;
-    }
-
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   Future<void> checkUserStatus() async {
@@ -81,14 +59,14 @@ class _UserEntryPageState extends State<UserEntryPage> {
             setState(() {
               _isUserInterestsExists = true;
             });
-
-            _initializeProviders();
+            Navigator.pushReplacementNamed(context, HomePage.routeID);
           }
         }
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
       }
-      setState(() {
-        _isLoading = false;
-      });
     } catch (err) {
       debugError(err.toString(), filename);
       errorSnackBar(
@@ -100,6 +78,8 @@ class _UserEntryPageState extends State<UserEntryPage> {
       });
     }
   }
+  // User entry page is called when the app launches
+  // Also when
 
   @override
   Widget build(BuildContext context) {
