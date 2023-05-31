@@ -25,11 +25,11 @@ class AnimatedButton extends StatelessWidget {
               "assets/RiveAssets/button.riv",
               controllers: [_btnAnimationController],
             ),
-            const Positioned.fill(
+            Positioned.fill(
               top: 8,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: const [
                   Icon(
                     CupertinoIcons.arrow_right,
                     color: Colors.black,

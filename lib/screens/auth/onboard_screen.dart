@@ -1,16 +1,18 @@
 import 'dart:ui';
 
-import 'package:enthem2frontend/firebase/sign_in_method.dart';
-import 'package:enthem2frontend/interfaces/user.dart';
-import 'package:enthem2frontend/logic/repositories/user_api_repository.dart';
-import 'package:enthem2frontend/screens/auth/username_screen.dart';
-import 'package:enthem2frontend/screens/home/home_screen.dart';
-import 'package:enthem2frontend/services/debug_console.dart';
-import 'package:enthem2frontend/widgets/animated_button.dart';
+import 'package:enthem2frontend/widgets/loading_widget.dart';
+
+import '/firebase/sign_in_method.dart';
+import '/interfaces/user.dart';
+import '/logic/repositories/user_api_repository.dart';
+import '/screens/auth/username_screen.dart';
+import '/screens/home/home_screen.dart';
+import '/services/debug_console.dart';
+import '/widgets/animated_button.dart';
+import '/widgets/custom_snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
-import '../../widgets/custom_snackbar.dart';
 
 class OnboardPage extends StatefulWidget {
   static const routeID = "/onboardpage";
@@ -28,9 +30,11 @@ class _OnboardPageState extends State<OnboardPage> {
   final UserAPIRepository _apiRepository = UserAPIRepository();
 
   late RiveAnimationController _btnAnimationController;
+  bool _isLoading = false;
 
   @override
   void initState() {
+    print("Onboard page!");
     _btnAnimationController = OneShotAnimation(
       "active",
       autoplay: false,
@@ -45,6 +49,9 @@ class _OnboardPageState extends State<OnboardPage> {
   }
 
   void signInWithGoogle(BuildContext context) async {
+    setState(() {
+      _isLoading = true;
+    });
     try {
       final User user = await _authService.signInGoogle();
       if (context.mounted) {
@@ -80,9 +87,15 @@ class _OnboardPageState extends State<OnboardPage> {
         title: "Something went wrong!",
         des: "Could not sign in through google! Try again later.",
       );
+      setState(() {
+        _isLoading = false;
+      });
       debugError(err.toString(), OnboardPage.filename);
       rethrow;
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Future<bool> checkUserExists(BuildContext context, String uid) async {
@@ -103,6 +116,10 @@ class _OnboardPageState extends State<OnboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    if(_isLoading){
+      return const LoadingWidget();
+    }
+
     return Scaffold(
       body: Stack(
         children: [
@@ -132,10 +149,10 @@ class _OnboardPageState extends State<OnboardPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Spacer(),
-                  const SizedBox(
+                  SizedBox(
                     width: 260,
                     child: Column(
-                      children: [
+                      children: const [
                         Text(
                           "Meet learn & start",
                           style: TextStyle(
