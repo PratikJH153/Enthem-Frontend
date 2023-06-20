@@ -34,7 +34,6 @@ class _OnboardPageState extends State<OnboardPage> {
 
   @override
   void initState() {
-    print("Onboard page!");
     _btnAnimationController = OneShotAnimation(
       "active",
       autoplay: false,
@@ -116,7 +115,7 @@ class _OnboardPageState extends State<OnboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    if(_isLoading){
+    if (_isLoading) {
       return const LoadingWidget();
     }
 
@@ -149,10 +148,10 @@ class _OnboardPageState extends State<OnboardPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Spacer(),
-                  SizedBox(
+                  const SizedBox(
                     width: 260,
                     child: Column(
-                      children: const [
+                      children: [
                         Text(
                           "Meet learn & start",
                           style: TextStyle(

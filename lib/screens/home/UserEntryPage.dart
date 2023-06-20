@@ -1,8 +1,6 @@
 // ignore_for_file: file_names
 
 import 'package:enthem2frontend/helper/error_constants.dart';
-import 'package:enthem2frontend/logic/provider/global_data_provider.dart';
-import 'package:enthem2frontend/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 
 import '/firebase/sign_in_method.dart';
@@ -32,7 +30,6 @@ class _UserEntryPageState extends State<UserEntryPage> {
 
   @override
   void initState() {
-    print("User entry page called!");
     checkUserStatus();
     super.initState();
   }
@@ -59,7 +56,9 @@ class _UserEntryPageState extends State<UserEntryPage> {
             setState(() {
               _isUserInterestsExists = true;
             });
-            Navigator.pushReplacementNamed(context, HomePage.routeID);
+            if (context.mounted) {
+              Navigator.pushReplacementNamed(context, HomePage.routeID);
+            }
           }
         }
       } else {

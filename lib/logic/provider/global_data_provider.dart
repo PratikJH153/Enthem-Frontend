@@ -10,7 +10,6 @@ class GlobalDataProvider {
   static const String filename = "friend_provider.dart";
 
   static Future<UserModel> initializeProviders(BuildContext context) async {
-    print("Started init..");
     final FriendProvider friendProvider = context.read<FriendProvider>();
     final UserDataProvider userDataProvider = context.read<UserDataProvider>();
     final RoomsProvider roomsProvider = context.read<RoomsProvider>();
@@ -26,7 +25,6 @@ class GlobalDataProvider {
       await roomsProvider.setNearbyData(user);
       await roomsProvider.setWorldListData();
 
-      print("Completed init..");
       return user;
     } catch (error) {
       debugError(error.toString(), filename);
