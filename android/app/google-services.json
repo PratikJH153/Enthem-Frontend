@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "889829470702-7bcf3s498naoi6848dtmfkgi6m3j2s2r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.haum.enthem",
+            "certificate_hash": "3f015fac47463460df1fcde647067719abf6b71e"
+          }
+        },
+        {
           "client_id": "889829470702-kqgmqriqdtjnqeospefl2c05cqc77ofk.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

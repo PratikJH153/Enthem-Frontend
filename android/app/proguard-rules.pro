@@ -1,4 +1,0 @@
--keep class io.socket.** { *; }
--dontwarn io.socket.**
--keep class com.google.firebase.auth.** {*;}
--keep class com.google.android.gms.auth.api.** {*;}

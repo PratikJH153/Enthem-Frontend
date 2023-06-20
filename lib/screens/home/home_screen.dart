@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
   late final PageController _pageController;
   FocusNode myfocus = FocusNode();
   int _bottomSelectedIndex = 1;
-  bool _isLoading = false;
+  bool _isLoading = true;
   final TextEditingController _roomController = TextEditingController();
 
   Future<void> addRoom(UserModel user) async {
@@ -128,12 +128,38 @@ class _HomePageState extends State<HomePage> {
     ];
   }
 
+  Future<void> _initializeProviders() async {
+    // setState(() {
+    //   _isLoading = true;
+    // });
+
+    try {
+      await GlobalDataProvider.initializeProviders(context);
+    } on Exception catch (e) {
+      debugError(e.toString(), filename);
+      showSnackBar(
+        context: context,
+        status: "failure",
+        title: "Server issue!",
+        des: "Couldn't connect to the server",
+      );
+      rethrow;
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   @override
   void initState() {
-    _pageController = PageController(
-      initialPage: 1,
-      keepPage: true,
-    );
+    _initializeProviders().then((value) => {
+          _pageController = PageController(
+            initialPage: 1,
+            keepPage: true,
+          )
+        });
+
     super.initState();
   }
 
