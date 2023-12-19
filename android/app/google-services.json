@@ -1,0 +1,90 @@
+{
+  "project_info": {
+    "project_number": "889829470702",
+    "project_id": "enthem2-e9286",
+    "storage_bucket": "enthem2-e9286.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889829470702:android:a942a61253dfa78a6adeff",
+        "android_client_info": {
+          "package_name": "com.example.enthem2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "889829470702-nc544u28drsbadcslnve36jdo0j6e4it.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-4IuUHYPpjN7HQFoBScJ7S97NhRrwQ9o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "889829470702-nc544u28drsbadcslnve36jdo0j6e4it.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "889829470702-ieb7gkgkrcsmqr3907prqm6glj74pgeh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.enthem2"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889829470702:android:024faf898cf505816adeff",
+        "android_client_info": {
+          "package_name": "com.haum.enthem"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "889829470702-8tccs9244g7hhiu5tieflmvq865vb58e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.haum.enthem",
+            "certificate_hash": "df0388562384dc43cec1303a1be6ffcbc6a4c31a"
+          }
+        },
+        {
+          "client_id": "889829470702-nc544u28drsbadcslnve36jdo0j6e4it.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-4IuUHYPpjN7HQFoBScJ7S97NhRrwQ9o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "889829470702-nc544u28drsbadcslnve36jdo0j6e4it.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "889829470702-ieb7gkgkrcsmqr3907prqm6glj74pgeh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.enthem2"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
