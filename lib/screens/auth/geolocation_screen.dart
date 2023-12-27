@@ -37,7 +37,6 @@ class _GeoLocationPageState extends State<GeoLocationPage> {
   final UserAPIRepository _apiRepository = UserAPIRepository();
 
   void navigateToHomePage() async {
-    print(_currentPosition);
     widget.userInterface.latitude =
         _currentPosition == null ? 0 : _currentPosition!.latitude;
     widget.userInterface.longitude =

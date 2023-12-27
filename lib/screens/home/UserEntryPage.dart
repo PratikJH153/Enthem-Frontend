@@ -40,7 +40,6 @@ class _UserEntryPageState extends State<UserEntryPage> {
         _isLoading = true;
       });
       final currentUserID = _authService.getCurrentUserID();
-      print("🔥🔥🔥🔥🔥" + currentUserID);
       setState(() {
         _isUserGoogleSignedIn = true;
       });
@@ -50,12 +49,14 @@ class _UserEntryPageState extends State<UserEntryPage> {
         if (isUserRegistered) {
           setState(() {
             _isUserRegistered = true;
+            print("USER CREATED!");
           });
           final isUserInterestsRegistered =
               await _apiRepository.checkInterestsAdded(currentUserID);
           if (isUserInterestsRegistered) {
             setState(() {
               _isUserInterestsExists = true;
+              print("INTERESTS CREATED!");
             });
             if (context.mounted) {
               Navigator.pushReplacementNamed(context, HomePage.routeID);

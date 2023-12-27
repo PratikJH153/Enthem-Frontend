@@ -144,48 +144,6 @@ pushAndRemoveUntil(BuildContext context, Widget destination, bool predict) {
 //       ),
 //     );
 
-Widget _getPlaceholderOrErrorImage(double size, hasBorder) => Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: const Color(0xff7c94b6),
-        borderRadius: BorderRadius.all(Radius.circular(size / 2)),
-        border: Border.all(
-          color: Colors.white,
-          width: hasBorder ? 2.0 : 0.0,
-        ),
-      ),
-      child: ClipOval(
-          child: Image.asset(
-        'assets/images/placeholder.jpg',
-        fit: BoxFit.cover,
-        height: size,
-        width: size,
-      )),
-    );
-
-Widget _getCircularImageProvider(
-    ImageProvider provider, double size, bool hasBorder) {
-  return ClipOval(
-    child: Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(size / 2)),
-        border: Border.all(
-          color: Colors.white,
-          style: hasBorder ? BorderStyle.solid : BorderStyle.none,
-          width: 1.0,
-        ),
-        image: DecorationImage(
-          image: provider,
-          fit: BoxFit.cover,
-        ),
-      ),
-    ),
-  );
-}
-
 bool isDarkMode(BuildContext context) {
   if (Theme.of(context).brightness == Brightness.light) {
     return false;

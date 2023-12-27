@@ -1,9 +1,10 @@
 import 'package:enthem2/constants/constants.dart';
+import 'package:enthem2/database/repositories/room_api_repository.dart';
+import 'package:enthem2/helper/error_constants.dart';
 import 'package:enthem2/models/message.dart';
 import 'package:enthem2/models/room.dart';
 import 'package:enthem2/models/user.dart';
 import 'package:enthem2/screens/home/home_screen.dart';
-import 'package:enthem2/screens/room/room_settings.dart';
 import 'package:enthem2/services/debug_console.dart';
 import 'package:enthem2/theme/theme.dart';
 import 'package:enthem2/widgets/dialog_box_widget.dart';
@@ -32,6 +33,7 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   late io.Socket? socket;
+  final RoomAPIRepository _roomAPIRepository = RoomAPIRepository();
 
   final TextEditingController _messageController = TextEditingController();
   List<Message> messagesList = [];
@@ -48,6 +50,7 @@ class _ChatPageState extends State<ChatPage> {
     } else {
       checkSockets();
     }
+
     super.initState();
   }
 
@@ -77,6 +80,7 @@ class _ChatPageState extends State<ChatPage> {
 
   void checkSockets() {
     socket!.on("sendMsgServer", (msg) {
+      print("ALKDJSLKAJSDKLASJDKLAJSD");
       setState(() {
         messagesList.add(
           Message(
@@ -284,6 +288,19 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    socket!.on("sendMsgServer", (msg) {
+      print("ALKDJSLKAJSDKLASJDKLAJSD");
+      setState(() {
+        messagesList.add(
+          Message(
+            type: "msg",
+            msg: msg["content"],
+            sender: msg["sender"],
+            timestamp: DateTime.parse(msg["timestamp"]),
+          ),
+        );
+      });
+    });
     return WillPopScope(
       onWillPop: () async {
         if (isRemoved || isGroupDeleted) {
@@ -305,35 +322,37 @@ class _ChatPageState extends State<ChatPage> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => RoomSettings(
-                            room: widget.room,
-                            distance: widget.distance,
-                            userID: widget.user!.uid!,
-                            socket: socket!,
-                            onTap: () {
-                              Map<String, dynamic> data = {
-                                "roomID": widget.room.id,
-                                "memberID": widget.user!.uid,
-                                "username": widget.user!.username,
-                              };
-                              socket!.emit("adminRemoved", data);
-                              Navigator.of(context).pushNamedAndRemoveUntil(
-                                HomePage.routeID,
-                                (route) => false,
-                              );
-                            },
-                          ),
-                        ),
-                      );
-                      // errorSnackBar(
-                      //   context: context,
-                      //   error: ErrorState.workingFeature,
-                      // );
-                    },
+                  child: Tooltip(
+                    waitDuration: const Duration(milliseconds: 0),
+                    message: widget.room.title,
+                    // onTap: () {
+                    // Navigator.of(context).push(
+                    //   MaterialPageRoute(
+                    //     builder: (context) => RoomSettings(
+                    //       room: widget.room,
+                    //       distance: widget.distance,
+                    //       userID: widget.user!.uid!,
+                    //       socket: socket!,
+                    //       onTap: () {
+                    //         Map<String, dynamic> data = {
+                    //           "roomID": widget.room.id,
+                    //           "memberID": widget.user!.uid,
+                    //           "username": widget.user!.username,
+                    //         };
+                    //         socket!.emit("adminRemoved", data);
+                    //         Navigator.of(context).pushNamedAndRemoveUntil(
+                    //           HomePage.routeID,
+                    //           (route) => false,
+                    //         );
+                    //       },
+                    //     ),
+                    //   ),
+                    // );
+                    // errorSnackBar(
+                    //   context: context,
+                    //   error: ErrorState.workingFeature,
+                    // );
+                    // },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -345,7 +364,7 @@ class _ChatPageState extends State<ChatPage> {
                           style: const TextStyle(fontFamily: "Exo2"),
                         ),
                         const Text(
-                          "Tap for group info",
+                          "Please have a friendly chat",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -360,7 +379,51 @@ class _ChatPageState extends State<ChatPage> {
                   onPressed: leaveRoom,
                   icon: const Icon(Icons.waving_hand_rounded),
                   label: const Text("Leave"),
-                )
+                ),
+                widget.user!.uid == widget.room.ownerID
+                    ? IconButton(
+                        onPressed: () {
+                          showCustomDialog(
+                            context,
+                            DialogBoxWidget(
+                              title: "Delete room",
+                              des: "Are you sure want to delete the room?",
+                              firstButton: "Yes",
+                              secondButton: "No",
+                              firstOnTap: () async {
+                                final isDeleted =
+                                    await _roomAPIRepository.deleteRoom(
+                                  roomID: widget.room.id!,
+                                  ownerID: widget.user!.uid!,
+                                );
+                                socket!.emit(
+                                    "deleteRoom", {"roomID": widget.room.id!});
+                                if (isDeleted) {
+                                  if (context.mounted) {
+                                    Navigator.of(context)
+                                        .pushNamedAndRemoveUntil(
+                                      HomePage.routeID,
+                                      (route) => false,
+                                    );
+                                  }
+                                } else {
+                                  if (context.mounted) {
+                                    errorSnackBar(
+                                      context: context,
+                                      error: ErrorState.deleteRoomError,
+                                    );
+                                  }
+                                }
+                              },
+                              secondOnTap: () {
+                                Navigator.of(context).pop(false);
+                              },
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.more_vert),
+                      )
+                    : const SizedBox()
               ],
             ),
           ),

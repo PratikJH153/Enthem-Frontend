@@ -1,4 +1,4 @@
-import 'package:enthem2/screens/auth/onboard_screen.dart';
+import 'package:enthem2/screens/auth/wrapper.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
         debugShowMaterialGrid: false,
         title: "Enthem",
         theme: themeData,
-        initialRoute: OnboardPage.routeID,
+        initialRoute: InternetWrapper.routeID,
         onUnknownRoute: (settings) => MaterialPageRoute(
           builder: (ctx) => const Scaffold(
             body: Center(
