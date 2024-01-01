@@ -1,6 +1,8 @@
 import 'package:enthem2/helper/error_constants.dart';
+import 'package:enthem2/logic/repositories/friend_api_repository.dart';
 import 'package:enthem2/models/friend.dart';
 import 'package:enthem2/theme/theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
@@ -193,10 +195,14 @@ Widget carouselCard(
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            errorSnackBar(
-                              context: context,
-                              error: ErrorState.workingFeature,
-                            );
+                            try {
+                              final repo = FriendAPIRepository();
+                              final currentUserID =
+                                  FirebaseAuth.instance.currentUser!.uid;
+                              repo.createChat(data.id!, currentUserID);
+                            } catch (err) {
+                              print("🔥🔥🔥🔥 " + err.toString());
+                            }
                           },
                           child: const Icon(CupertinoIcons.chat_bubble_fill),
                         )

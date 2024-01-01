@@ -67,7 +67,7 @@ class _ChatPageState extends State<ChatPage> {
       socket!.connect();
       socket!.onConnect((_) {
         socket!.emit("joinRoom", {
-          "uid": widget.room.id,
+          "id": widget.room.id,
           "memberID": widget.user!.uid,
           "username": widget.user!.username,
         });
@@ -80,7 +80,6 @@ class _ChatPageState extends State<ChatPage> {
 
   void checkSockets() {
     socket!.on("sendMsgServer", (msg) {
-      print("ALKDJSLKAJSDKLASJDKLAJSD");
       setState(() {
         messagesList.add(
           Message(
@@ -288,19 +287,6 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    socket!.on("sendMsgServer", (msg) {
-      print("ALKDJSLKAJSDKLASJDKLAJSD");
-      setState(() {
-        messagesList.add(
-          Message(
-            type: "msg",
-            msg: msg["content"],
-            sender: msg["sender"],
-            timestamp: DateTime.parse(msg["timestamp"]),
-          ),
-        );
-      });
-    });
     return WillPopScope(
       onWillPop: () async {
         if (isRemoved || isGroupDeleted) {
@@ -381,47 +367,57 @@ class _ChatPageState extends State<ChatPage> {
                   label: const Text("Leave"),
                 ),
                 widget.user!.uid == widget.room.ownerID
-                    ? IconButton(
-                        onPressed: () {
-                          showCustomDialog(
-                            context,
-                            DialogBoxWidget(
-                              title: "Delete room",
-                              des: "Are you sure want to delete the room?",
-                              firstButton: "Yes",
-                              secondButton: "No",
-                              firstOnTap: () async {
-                                final isDeleted =
-                                    await _roomAPIRepository.deleteRoom(
-                                  roomID: widget.room.id!,
-                                  ownerID: widget.user!.uid!,
-                                );
-                                socket!.emit(
-                                    "deleteRoom", {"roomID": widget.room.id!});
-                                if (isDeleted) {
-                                  if (context.mounted) {
-                                    Navigator.of(context)
-                                        .pushNamedAndRemoveUntil(
-                                      HomePage.routeID,
-                                      (route) => false,
-                                    );
-                                  }
-                                } else {
-                                  if (context.mounted) {
-                                    errorSnackBar(
-                                      context: context,
-                                      error: ErrorState.deleteRoomError,
-                                    );
-                                  }
-                                }
-                              },
-                              secondOnTap: () {
-                                Navigator.of(context).pop(false);
-                              },
-                            ),
-                          );
-                        },
+                    ? PopupMenuButton<int>(
                         icon: const Icon(Icons.more_vert),
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            onTap: () {
+                              showCustomDialog(
+                                context,
+                                DialogBoxWidget(
+                                  title: "Delete room",
+                                  des: "Are you sure want to delete the room?",
+                                  firstButton: "Yes",
+                                  secondButton: "No",
+                                  firstOnTap: () async {
+                                    final isDeleted =
+                                        await _roomAPIRepository.deleteRoom(
+                                      roomID: widget.room.id!,
+                                      ownerID: widget.user!.uid!,
+                                    );
+                                    socket!.emit("deleteRoom",
+                                        {"roomID": widget.room.id!});
+                                    if (isDeleted) {
+                                      if (context.mounted) {
+                                        Navigator.of(context)
+                                            .pushNamedAndRemoveUntil(
+                                          HomePage.routeID,
+                                          (route) => false,
+                                        );
+                                      }
+                                    } else {
+                                      if (context.mounted) {
+                                        errorSnackBar(
+                                          context: context,
+                                          error: ErrorState.deleteRoomError,
+                                        );
+                                      }
+                                    }
+                                  },
+                                  secondOnTap: () {
+                                    Navigator.of(context).pop(false);
+                                  },
+                                ),
+                              );
+                            },
+                            value: 1,
+                            // row has two child icon and text.
+                            child: const Text("Delete room"),
+                          ),
+                        ],
+                        offset: const Offset(0, 50),
+                        color: backgroundColor,
+                        elevation: 2,
                       )
                     : const SizedBox()
               ],
@@ -542,13 +538,13 @@ class _ChatPageState extends State<ChatPage> {
                             ),
                           ),
                         ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.emoji_emotions_sharp,
-                            size: 30,
-                          ),
-                        ),
+                        // IconButton(
+                        //   onPressed: () {},
+                        //   icon: const Icon(
+                        //     Icons.emoji_emotions_sharp,
+                        //     size: 30,
+                        //   ),
+                        // ),
                         Padding(
                           padding: const EdgeInsets.only(right: 10.0),
                           child: IconButton(

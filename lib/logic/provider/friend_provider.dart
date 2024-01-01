@@ -12,6 +12,7 @@ import '../contracts/friend_contract.dart';
 class FriendProvider extends ChangeNotifier implements FriendContract {
   final Dio _dio = Dio();
   final String _url = '$baseUrl/user';
+  final String _chat_url = '$baseUrl/chat';
   static const String filename = "friend_provider.dart";
 
   AsyncState nearbyAsyncState = AsyncState.isLoading;
@@ -108,8 +109,21 @@ class FriendProvider extends ChangeNotifier implements FriendContract {
   }
 
   @override
-  Future<bool> createChat(String userID) {
-    // TODO: implement createChat
-    throw UnimplementedError();
+  Future<void> createChat(String user1ID, String user2ID) async {
+    try {
+      final jsonData = {"user1ID": user1ID, "user2ID": user2ID};
+      Response response = await _dio.post(
+        "$_chat_url/",
+        data: json.encode(jsonData),
+        options: getOptions(),
+      );
+      final data = json.decode(response.toString());
+      debugData(data["data"], filename);
+    } catch (error) {
+      debugError(error.toString(), filename);
+      forYouAsyncState = AsyncState.wentWrong;
+      notifyListeners();
+      rethrow;
+    }
   }
 }

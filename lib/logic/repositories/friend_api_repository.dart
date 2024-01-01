@@ -10,8 +10,8 @@ class FriendAPIRepository extends FriendContract {
   }
 
   @override
-  Future<bool> createChat(String userID) async {
-    return await _provider.createChat(userID);
+  Future<void> createChat(String user1ID, String user2ID) async {
+    return await _provider.createChat(user1ID, user2ID);
   }
 
   @override
