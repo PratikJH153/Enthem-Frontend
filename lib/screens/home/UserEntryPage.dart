@@ -13,7 +13,7 @@ import '/services/debug_console.dart';
 
 class UserEntryPage extends StatefulWidget {
   static const routeID = "/userentrypage";
-  const UserEntryPage({Key? key}) : super(key: key);
+  const UserEntryPage({super.key});
 
   @override
   State<UserEntryPage> createState() => _UserEntryPageState();

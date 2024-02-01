@@ -52,6 +52,7 @@ class UserAPIProvider extends IUserService {
   Future<bool> checkUserExists(String id) async {
     try {
       final data = json.encode({"uid": id});
+      debugData(_url, filename);
       debugData(data.toString(), filename);
       Response response = await _dio.get(
         "$_url/exists",
@@ -74,6 +75,7 @@ class UserAPIProvider extends IUserService {
   Future<UserModel> getUser(String id) async {
     try {
       final data = json.encode({"uid": id});
+      debugData(_url, filename);
       debugData(data.toString(), filename);
       Response response = await _dio.get(
         _url,

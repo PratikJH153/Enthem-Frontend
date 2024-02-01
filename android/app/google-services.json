@@ -14,55 +14,19 @@
       },
       "oauth_client": [
         {
+          "client_id": "889829470702-f6do6kfcodhavsq57aocpks0la3ost8i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.enthem2",
+            "certificate_hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+          }
+        },
+        {
           "client_id": "889829470702-ofdtr094fj0sfmmova2e662931m0jnop.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.enthem2",
             "certificate_hash": "610ac4127808f1a0a245bb75df9bc4a19457ed40"
-          }
-        },
-        {
-          "client_id": "889829470702-nc544u28drsbadcslnve36jdo0j6e4it.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD-4IuUHYPpjN7HQFoBScJ7S97NhRrwQ9o"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "889829470702-nc544u28drsbadcslnve36jdo0j6e4it.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "889829470702-ieb7gkgkrcsmqr3907prqm6glj74pgeh.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.enthem2"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:889829470702:android:024faf898cf505816adeff",
-        "android_client_info": {
-          "package_name": "com.haum.enthem"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "889829470702-8tccs9244g7hhiu5tieflmvq865vb58e.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.haum.enthem",
-            "certificate_hash": "df0388562384dc43cec1303a1be6ffcbc6a4c31a"
           }
         },
         {

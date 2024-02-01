@@ -25,6 +25,7 @@ void main() async {
   ));
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(
+    name: "Enthem",
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const MyApp());
