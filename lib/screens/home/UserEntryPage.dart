@@ -87,16 +87,17 @@ class _UserEntryPageState extends State<UserEntryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return !_isLoading
-        ? (_isUserGoogleSignedIn && _isUserRegistered
-            ? _isUserInterestsExists
-                ? const HomePage()
-                : const InterestsPage()
-            : const OnboardPage())
-        : AnimatedContainer(
-            duration: const Duration(milliseconds: 1500),
-            curve: Curves.linear,
-            child: const SplashScreen(),
-          );
+    // return !_isLoading
+    //     ? (_isUserGoogleSignedIn && _isUserRegistered
+    //         ? _isUserInterestsExists
+    //             ? const HomePage()
+    //             : const InterestsPage()
+    //         : const OnboardPage())
+    //     : AnimatedContainer(
+    //         duration: const Duration(milliseconds: 1500),
+    //         curve: Curves.linear,
+    //         child: const SplashScreen(),
+    //       );
+    return OnboardPage();
   }
 }

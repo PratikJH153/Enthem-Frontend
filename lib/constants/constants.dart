@@ -10,6 +10,6 @@ final String emulator = env['emulator']!;
 final String local = env['local']!;
 final String prod = env['prod']!;
 
-final String baseUrl = kProdMode ? "$prod:$prodPort" : "$emulator:$localPort";
+final String baseUrl = kProdMode ? "$prod:$prodPort" : "$local:$localPort";
 final String socketUrl =
     kProdMode ? "$prod:$socketPort" : "$emulator:$socketPort";

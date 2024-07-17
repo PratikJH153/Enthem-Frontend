@@ -16,6 +16,7 @@ class WorkingFeatureScreen extends StatelessWidget {
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Lottie.asset(
               "assets/images/working.json",

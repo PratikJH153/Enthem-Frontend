@@ -169,6 +169,7 @@ class _ChatPageState extends State<ChatPage> {
     String msg,
     String sender,
   ) {
+    print("HELLO");
     Message message = Message(
       type: "ownMsg",
       msg: msg,
@@ -209,7 +210,7 @@ class _ChatPageState extends State<ChatPage> {
         des: "Are you sure want to leave the room? We need you to stay!",
         firstButton: "Stay",
         secondButton: "Leave",
-        firstOnTap: () => Navigator.of(context).pop(),
+        firstOnTap: () => Navigator.of(context).pop(false),
         secondOnTap: () {
           Map<String, dynamic> data = {
             "roomID": widget.room.id,
@@ -217,10 +218,7 @@ class _ChatPageState extends State<ChatPage> {
             "username": widget.user!.username,
           };
           socket!.emit("removeMember", data);
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            HomePage.routeID,
-            (route) => false,
-          );
+          Navigator.of(context).pop(true);
         },
       ),
     );

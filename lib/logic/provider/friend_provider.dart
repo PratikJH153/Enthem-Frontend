@@ -38,7 +38,9 @@ class FriendProvider extends ChangeNotifier implements FriendContract {
       final data = json.decode(response.toString());
       final List<Friend> recommendList = [];
       debugData(data["data"], filename);
-      data["data"].forEach((e) => recommendList.add(Friend.fromJson(e)));
+      if (data["data"] != null) {
+        data["data"].forEach((e) => recommendList.add(Friend.fromJson(e)));
+      }
 
       nearbyList = recommendList;
 
@@ -68,7 +70,10 @@ class FriendProvider extends ChangeNotifier implements FriendContract {
       final data = json.decode(response.toString());
       final List<Friend> recommendList = [];
       debugData(data["data"], filename);
-      data["data"].forEach((e) => recommendList.add(Friend.fromJson(e)));
+
+      if (data["data"] != null) {
+        data["data"].forEach((e) => recommendList.add(Friend.fromJson(e)));
+      }
 
       forYouList = recommendList;
 
