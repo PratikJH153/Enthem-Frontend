@@ -20,7 +20,7 @@ class _MessagesPageState extends State<MessagesPage> {
         return;
       },
       child: const Scaffold(
-        body: WorkingFeatureScreen(),
+        body: Center(child: WorkingFeatureScreen()),
       ),
     );
   }

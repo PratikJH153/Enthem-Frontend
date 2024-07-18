@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+
 import '/logic/provider/user_provider.dart';
 import '/helper/error_constants.dart';
 import '/widgets/primary_button.dart';
@@ -257,11 +259,13 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(
                 height: 5,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 26.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: buildBottomNavBarItems(),
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 26.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: buildBottomNavBarItems(),
+                  ),
                 ),
               ),
             ],
