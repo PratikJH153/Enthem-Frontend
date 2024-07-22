@@ -13,7 +13,10 @@ import 'theme/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   // Restrict orientation to portrait mode
   await SystemChrome.setPreferredOrientations(
     [
@@ -30,11 +33,6 @@ void main() async {
 
   // Load environment variables from the .env file
   await dotenv.load(fileName: ".env");
-
-  // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 
   runApp(const MyApp());
 }

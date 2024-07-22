@@ -6,11 +6,11 @@ class OtherMessageWidget extends StatelessWidget {
   final String sender;
   final DateTime timestamp;
   const OtherMessageWidget({
-    Key? key,
+    super.key,
     required this.msg,
     required this.sender,
     required this.timestamp,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

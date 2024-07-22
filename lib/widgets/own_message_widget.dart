@@ -6,11 +6,11 @@ class OwnMessageWidget extends StatelessWidget {
   final String sender;
   final DateTime timestamp;
   const OwnMessageWidget({
-    Key? key,
+    super.key,
     required this.msg,
     required this.sender,
     required this.timestamp,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

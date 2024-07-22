@@ -21,11 +21,11 @@ class ChatPage extends StatefulWidget {
   final Room room;
   final String distance;
   const ChatPage({
-    Key? key,
+    super.key,
     this.user,
     required this.room,
     required this.distance,
-  }) : super(key: key);
+  });
 
   @override
   State<ChatPage> createState() => _ChatPageState();

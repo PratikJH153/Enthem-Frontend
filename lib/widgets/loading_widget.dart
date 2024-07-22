@@ -37,7 +37,7 @@ class LoadingWidget extends StatelessWidget {
 }
 
 class WentWrongPage extends StatelessWidget {
-  const WentWrongPage({Key? key}) : super(key: key);
+  const WentWrongPage({super.key});
 
   @override
   Widget build(BuildContext context) {

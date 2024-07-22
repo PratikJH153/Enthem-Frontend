@@ -201,7 +201,7 @@ Widget carouselCard(
                                   FirebaseAuth.instance.currentUser!.uid;
                               repo.createChat(data.id!, currentUserID);
                             } catch (err) {
-                              print("🔥🔥🔥🔥 " + err.toString());
+                              print("🔥🔥🔥🔥 $err");
                             }
                           },
                           child: const Icon(CupertinoIcons.chat_bubble_fill),

@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 
 import '/firebase/sign_in_method.dart';
 import '/logic/repositories/user_api_repository.dart';
-import '/screens/auth/interests_screen.dart';
 import '/screens/auth/onboard_screen.dart';
-import '/screens/auth/splash_screen.dart';
 import '/screens/home/home_screen.dart';
 import '/services/debug_console.dart';
 
@@ -98,6 +96,6 @@ class _UserEntryPageState extends State<UserEntryPage> {
     //         curve: Curves.linear,
     //         child: const SplashScreen(),
     //       );
-    return OnboardPage();
+    return const OnboardPage();
   }
 }
