@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyD-4IuUHYPpjN7HQFoBScJ7S97NhRrwQ9o',
-    appId: '1:889829470702:android:a942a61253dfa78a6adeff',
+    appId: '1:889829470702:android:95affc57c7de1b096adeff',
     messagingSenderId: '889829470702',
     projectId: 'enthem2-e9286',
     storageBucket: 'enthem2-e9286.appspot.com',
@@ -67,4 +67,5 @@ class DefaultFirebaseOptions {
     iosClientId: '889829470702-ieb7gkgkrcsmqr3907prqm6glj74pgeh.apps.googleusercontent.com',
     iosBundleId: 'com.example.enthem2',
   );
+
 }

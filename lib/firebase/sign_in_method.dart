@@ -12,27 +12,28 @@ class AuthService implements IAuthService {
   Future<User> signInGoogle() async {
     try {
       GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
-      GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount!.authentication;
+      if (googleSignInAccount == null) {
+        throw Exception('Google sign-in failed.');
+      }
 
+      GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
       AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleSignInAuthentication.accessToken,
         idToken: googleSignInAuthentication.idToken,
       );
-      UserCredential authResult =
-          await _firebaseAuth.signInWithCredential(credential);
-      final User user = authResult.user!;
+
+      UserCredential authResult = await _firebaseAuth.signInWithCredential(credential);
+      User user = authResult.user!;
 
       assert(!user.isAnonymous);
       User currentUser = _firebaseAuth.currentUser!;
       assert(user.uid == currentUser.uid);
 
-      debugData(
-          "User Name: ${user.displayName} Email: ${user.email}", filename);
+      debugData("User Name: ${user.displayName} Email: ${user.email}", filename);
 
       return user;
     } catch (err) {
-      debugError(err.toString(), "sign_in_method.dart");
+      debugError('Error: ${err.toString()}\nStackTrace: ${StackTrace.current}', "sign_in_method.dart");
       rethrow;
     }
   }
