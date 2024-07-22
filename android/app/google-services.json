@@ -2,15 +2,14 @@
   "project_info": {
     "project_number": "889829470702",
     "project_id": "enthem2-e9286",
-    "storage_bucket": "enthem2-e9286.appspot.com",
-    "google_app_id": "1:889829470702:android:95affc57c7de1b096adeff"
+    "storage_bucket": "enthem2-e9286.appspot.com"
   },
   "client": [
     {
       "client_info": {
         "mobilesdk_app_id": "1:889829470702:android:a942a61253dfa78a6adeff",
         "android_client_info": {
-          "package_name": "com.haum.enthem2"
+          "package_name": "com.example.enthem2"
         }
       },
       "oauth_client": [
@@ -18,7 +17,7 @@
           "client_id": "889829470702-6co0pkntju1ksac75voor1s8rks4fi8h.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.haum.enthem2",
+            "package_name": "com.example.enthem2",
             "certificate_hash": "17c6cd322db4e58661aa0d25d8668046080e0312"
           }
         },
@@ -26,7 +25,7 @@
           "client_id": "889829470702-f6do6kfcodhavsq57aocpks0la3ost8i.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.haum.enthem2",
+            "package_name": "com.example.enthem2",
             "certificate_hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
           }
         },
@@ -34,7 +33,7 @@
           "client_id": "889829470702-ofdtr094fj0sfmmova2e662931m0jnop.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.haum.enthem2",
+            "package_name": "com.example.enthem2",
             "certificate_hash": "610ac4127808f1a0a245bb75df9bc4a19457ed40"
           }
         },
@@ -59,7 +58,7 @@
               "client_id": "889829470702-ieb7gkgkrcsmqr3907prqm6glj74pgeh.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.haum.enthem2"
+                "bundle_id": "com.example.enthem2"
               }
             }
           ]
@@ -70,7 +69,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:889829470702:android:95affc57c7de1b096adeff",
         "android_client_info": {
-          "package_name": "com.haum.enthem2"
+          "package_name": "com.example.enthem2"
         }
       },
       "oauth_client": [
@@ -78,7 +77,7 @@
           "client_id": "889829470702-r4mrefmg6ohlotkinvp0phslh6u9hhea.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.haum.enthem2",
+            "package_name": "com.example.enthem2",
             "certificate_hash": "17c6cd322db4e58661aa0d25d8668046080e0312"
           }
         },
@@ -103,7 +102,7 @@
               "client_id": "889829470702-ieb7gkgkrcsmqr3907prqm6glj74pgeh.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.haum.enthem2"
+                "bundle_id": "com.example.enthem2"
               }
             }
           ]
