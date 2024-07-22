@@ -13,21 +13,29 @@ import 'theme/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations(
+
+  // Restrict orientation to portrait mode
+  await SystemChrome.setPreferredOrientations(
     [
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ],
   );
+
+  // Set the status bar color and brightness
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.black,
     statusBarBrightness: Brightness.light,
   ));
+
+  // Load environment variables from the .env file
   await dotenv.load(fileName: ".env");
+
+  // Initialize Firebase
   await Firebase.initializeApp(
-    name: "Enthem",
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   runApp(const MyApp());
 }
 
