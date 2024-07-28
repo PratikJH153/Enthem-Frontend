@@ -1,6 +1,8 @@
 // ignore_for_file: file_names
 
 import 'package:enthem2/helper/error_constants.dart';
+import 'package:enthem2/screens/auth/interests_screen.dart';
+import 'package:enthem2/screens/auth/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 import '/firebase/sign_in_method.dart';
@@ -85,17 +87,17 @@ class _UserEntryPageState extends State<UserEntryPage> {
 
   @override
   Widget build(BuildContext context) {
-    // return !_isLoading
-    //     ? (_isUserGoogleSignedIn && _isUserRegistered
-    //         ? _isUserInterestsExists
-    //             ? const HomePage()
-    //             : const InterestsPage()
-    //         : const OnboardPage())
-    //     : AnimatedContainer(
-    //         duration: const Duration(milliseconds: 1500),
-    //         curve: Curves.linear,
-    //         child: const SplashScreen(),
-    //       );
-    return const OnboardPage();
+    return !_isLoading
+        ? (_isUserGoogleSignedIn && _isUserRegistered
+            ? _isUserInterestsExists
+                ? const HomePage()
+                : const InterestsPage()
+            : const OnboardPage())
+        : AnimatedContainer(
+            duration: const Duration(milliseconds: 1500),
+            curve: Curves.linear,
+            child: const SplashScreen(),
+          );
+    // return const OnboardPage();
   }
 }
