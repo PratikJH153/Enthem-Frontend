@@ -1,5 +1,6 @@
 class UserInterface {
   String? id;
+  String? timezone;
   String? username;
   String? email;
   String? photoURL;
@@ -11,6 +12,7 @@ class UserInterface {
 
   UserInterface({
     this.id,
+    this.timezone,
     this.username,
     this.email,
     this.photoURL,
@@ -23,6 +25,6 @@ class UserInterface {
 
   @override
   String toString() {
-    return 'UserModel{id: $id, username: $username, email: $email, photoURL: $photoURL, gender: $gender, age: $age, interests: $interests, latitude: $latitude, longitude: $longitude}';
+    return 'UserModel{id: $id, timezone: $timezone, username: $username, email: $email, photoURL: $photoURL, gender: $gender, age: $age, interests: $interests, latitude: $latitude, longitude: $longitude}';
   }
 }

@@ -322,10 +322,18 @@ class _ProfilePageState extends State<ProfilePage> {
                         _user!.email!,
                       ),
                       const SizedBox(
-                        height: 10,
+                        height: 15,
                       ),
+                      const Text(
+                        "Timezone",
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.white54,
+                        ),
+                      ),
+                      Text(_user?.timezone ?? "Asia/Kolkata"),
                       const SizedBox(
-                        height: 5,
+                        height: 15,
                       ),
                       const Text(
                         "Interests",

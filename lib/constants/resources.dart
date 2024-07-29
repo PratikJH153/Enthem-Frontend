@@ -1,4 +1,4 @@
-final timezones = [
+final TIMEZONE_LIST = [
   "Africa/Abidjan",
   "Africa/Algiers",
   "Africa/Bissau",

@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 // ignore: must_be_immutable
 class UserModel extends Equatable {
   final String? uid;
+  final String? timezone;
   final String? username;
   final String? email;
   final String? photoURL;
@@ -19,6 +20,7 @@ class UserModel extends Equatable {
 
   UserModel({
     required this.uid,
+    required this.timezone,
     required this.username,
     required this.email,
     required this.photoURL,
@@ -42,6 +44,7 @@ class UserModel extends Equatable {
   factory UserModel.fromInterface(UserInterface userData) {
     final UserModel user = UserModel(
       uid: userData.id,
+      timezone: userData.timezone?.toString().trim(),
       username: userData.username?.toString().trim(),
       email: userData.email?.toString(),
       photoURL: userData.photoURL?.toString(),
@@ -58,6 +61,7 @@ class UserModel extends Equatable {
   factory UserModel.fromJson(Map<String, dynamic> userData) {
     final UserModel user = UserModel(
       uid: userData["uid"],
+      timezone: userData["timezone"],
       username: userData["username"].toString().trim(),
       email: userData["email"],
       photoURL: userData["photoURL"].toString(),
@@ -84,6 +88,7 @@ class UserModel extends Equatable {
     final userMap = {
       "uid": uid!,
       "username": username,
+      "timezone": timezone,
       "email": email!,
       "photoURL": photoURL,
       "gender": gender,
@@ -98,6 +103,7 @@ class UserModel extends Equatable {
   @override
   List<Object?> get props => [
         uid,
+        timezone,
         username,
         email,
         photoURL,

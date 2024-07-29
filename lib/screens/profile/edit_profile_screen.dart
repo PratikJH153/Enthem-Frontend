@@ -1,4 +1,5 @@
 import 'package:enthem2/constants/page_padding.dart';
+import 'package:enthem2/constants/resources.dart';
 import 'package:enthem2/helper/error_constants.dart';
 import 'package:enthem2/helper/helpers.dart';
 import 'package:enthem2/logic/provider/global_data_provider.dart';
@@ -18,6 +19,7 @@ import 'package:provider/provider.dart';
 
 class EditProfilePage extends StatefulWidget {
   static const routeID = "/editprofilepage";
+
   const EditProfilePage({
     super.key,
   });
@@ -30,6 +32,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   static const String filename = "edit_profile_screen.dart";
   final UserAPIRepository _userAPIRepository = UserAPIRepository();
   final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _timezoneController = TextEditingController();
   bool _isLocationLoading = false;
   Position? _currentPosition;
   late int index1;
@@ -268,6 +271,34 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                 const SizedBox(
                   height: 15,
+                ),
+                Autocomplete<String>(
+                  optionsBuilder: (TextEditingValue textEditingValue) {
+                    if (textEditingValue.text.isEmpty) {
+                      return const Iterable<String>.empty();
+                    }
+                    return TIMEZONE_LIST.where((String option) {
+                      return option
+                          .toLowerCase()
+                          .contains(textEditingValue.text.toLowerCase());
+                    });
+                  },
+                  onSelected: (String selection) {
+                    _timezoneController.text = selection;
+                  },
+                  fieldViewBuilder: (BuildContext context,
+                      TextEditingController fieldTextEditingController,
+                      FocusNode fieldFocusNode,
+                      VoidCallback onFieldSubmitted) {
+                    return TextField(
+                      controller: fieldTextEditingController,
+                      focusNode: fieldFocusNode,
+                      decoration: const InputDecoration(
+                        labelText: 'Time Zone',
+                        border: OutlineInputBorder(),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(
                   height: 15,
