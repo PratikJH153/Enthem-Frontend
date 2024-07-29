@@ -1,3 +1,4 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:enthem2/constants/page_padding.dart';
 import 'package:enthem2/constants/resources.dart';
 import 'package:enthem2/helper/error_constants.dart';
@@ -119,6 +120,43 @@ class _EditProfilePageState extends State<EditProfilePage> {
     } catch (err) {
       errorSnackBar(context: context, error: ErrorState.serverError);
     }
+  }
+
+  Future<void> updateTimezone() async {
+    setState(() {
+      _isLoading = true;
+    });
+    if (_currentPosition != null) {
+      try {
+        String timezone = _timezoneController.text;
+        if(!TIMEZONE_LIST.contains(timezone)) {
+          showSnackBar(context: context, status: "warning", title: "Invalid Timezone",
+            des: "Provide a valid timezone!");
+          return;
+        }
+
+        await _userAPIRepository.updateUser({
+          "uid": user!.uid!,
+          "timezone": timezone,
+        });
+        if (context.mounted) {
+          GlobalDataProvider.resetUserDataProvider(context);
+        }
+        setState(() {
+          user!.updateLocation(
+              _currentPosition?.latitude, _currentPosition?.longitude);
+          _isLoading = false;
+        });
+      } catch (err) {
+        errorSnackBar(context: context, error: ErrorState.serverError);
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Future<void> updateLocation() async {
@@ -299,6 +337,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                     );
                   },
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                TextButton(
+                  onPressed: () async {
+                    await _getCurrentPosition().then((value) async {
+                      debugData(_currentPosition, filename);
+                      await updateTimezone();
+                    }).catchError((err) {});
+                  },
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    textStyle: const TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                  child: const Text(
+                    "Update Timezone",
+                  ),
                 ),
                 const SizedBox(
                   height: 15,
