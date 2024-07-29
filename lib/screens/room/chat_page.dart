@@ -169,13 +169,13 @@ class _ChatPageState extends State<ChatPage> {
     String msg,
     String sender,
   ) {
-    print("HELLO");
     Message message = Message(
       type: "ownMsg",
       msg: msg,
       sender: sender,
-      timestamp: DateTime.now(),
+      timestamp: DateTime.now().toUtc(),
     );
+    print(DateTime.now().toUtc());
     setState(() {
       messagesList.add(message);
     });
