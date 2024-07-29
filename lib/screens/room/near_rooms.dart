@@ -61,7 +61,7 @@ class _NearRoomsPageState extends State<NearRoomsPage> {
                   final room = roomsList[index];
                   final distance = computeDistance(
                     [user.longitude!, user.latitude!],
-                    roomsList[index].coordinates,
+                    room.coordinates,
                   ).toStringAsFixed(2);
                   return RoomTileWidget(
                     user: user,

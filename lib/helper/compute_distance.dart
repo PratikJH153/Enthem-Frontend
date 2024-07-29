@@ -8,6 +8,7 @@ double computeDistance(
   double lon1 = double.parse(point1[0].toString());
   double lat2 = double.parse(point2[1].toString());
   double lon2 = double.parse(point2[0].toString());
+
   const R = 3958.8; // Radius of the earth in miles
   var dLat = _toRadians(lat2 - lat1);
   var dLon = _toRadians(lon2 - lon1);

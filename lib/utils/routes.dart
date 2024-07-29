@@ -49,8 +49,11 @@ class Routes {
           ),
         );
       case InterestsPage.routeID:
+        final UserInterface userInterface = settings.arguments as UserInterface;
         return MaterialPageRoute(
-          builder: (context) => const InterestsPage(),
+          builder: (context) => InterestsPage(
+            userInterface: userInterface,
+          ),
         );
       case GeoLocationPage.routeID:
         final UserInterface userInterface = settings.arguments as UserInterface;

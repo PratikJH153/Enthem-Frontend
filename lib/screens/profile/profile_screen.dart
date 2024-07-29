@@ -451,7 +451,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 rooms.isEmpty
-                    ? const Text("No rooms created yet")
+                    ? const Padding(
+                        padding: kPagePadding,
+                        child: Text("No rooms created yet"),
+                      )
                     : Expanded(
                         child: ListView.builder(
                           itemCount: rooms.length,

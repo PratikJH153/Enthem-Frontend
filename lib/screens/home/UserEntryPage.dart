@@ -1,7 +1,6 @@
 // ignore_for_file: file_names
 
 import 'package:enthem2/helper/error_constants.dart';
-import 'package:enthem2/screens/auth/interests_screen.dart';
 import 'package:enthem2/screens/auth/splash_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -26,7 +25,6 @@ class _UserEntryPageState extends State<UserEntryPage> {
   bool _isLoading = false;
   bool _isUserRegistered = false;
   bool _isUserGoogleSignedIn = false;
-  bool _isUserInterestsExists = false;
 
   @override
   void initState() {
@@ -49,24 +47,12 @@ class _UserEntryPageState extends State<UserEntryPage> {
         if (isUserRegistered) {
           setState(() {
             _isUserRegistered = true;
+            _isLoading = false;
             print("USER CREATED!");
           });
-          final isUserInterestsRegistered =
-              await _apiRepository.checkInterestsAdded(currentUserID);
-          if (isUserInterestsRegistered) {
-            setState(() {
-              _isUserInterestsExists = true;
-              print("INTERESTS CREATED!");
-            });
-            if (context.mounted) {
-              Navigator.pushReplacementNamed(context, HomePage.routeID);
-            }
-          }
+        } else {
+          _authService.signOut();
         }
-      } else {
-        setState(() {
-          _isLoading = false;
-        });
       }
     } catch (err) {
       debugError(err.toString(), filename);
@@ -76,11 +62,10 @@ class _UserEntryPageState extends State<UserEntryPage> {
           error: ErrorState.serverError,
         );
       }
-
-      setState(() {
-        _isLoading = false;
-      });
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
   // User entry page is called when the app launches
   // Also when
@@ -89,9 +74,7 @@ class _UserEntryPageState extends State<UserEntryPage> {
   Widget build(BuildContext context) {
     return !_isLoading
         ? (_isUserGoogleSignedIn && _isUserRegistered
-            ? _isUserInterestsExists
-                ? const HomePage()
-                : const InterestsPage()
+            ? const HomePage()
             : const OnboardPage())
         : AnimatedContainer(
             duration: const Duration(milliseconds: 1500),

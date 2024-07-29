@@ -1,10 +1,9 @@
 import 'package:enthem2/constants/page_padding.dart';
 import 'package:enthem2/helper/error_constants.dart';
 import 'package:enthem2/interfaces/user.dart';
-import 'package:enthem2/logic/repositories/user_api_repository.dart';
-import 'package:enthem2/models/user.dart';
+import 'package:enthem2/logic/third-party/cities_country.dart';
+import 'package:enthem2/screens/auth/country_city_dialog.dart';
 import 'package:enthem2/screens/auth/interests_screen.dart';
-import 'package:enthem2/screens/home/home_screen.dart';
 import 'package:enthem2/services/debug_console.dart';
 import 'package:enthem2/theme/theme.dart';
 import 'package:enthem2/utils/location_permission.dart';
@@ -34,14 +33,44 @@ class _GeoLocationPageState extends State<GeoLocationPage> {
   static const String filename = "geolocation_screen.dart";
   bool isDisabled = true;
 
-  final UserAPIRepository _apiRepository = UserAPIRepository();
-
-  void navigateToHomePage() async {
+  void navigateToInterestsPage() async {
     widget.userInterface.latitude =
         _currentPosition == null ? 0 : _currentPosition!.latitude;
     widget.userInterface.longitude =
         _currentPosition == null ? 0 : _currentPosition!.longitude;
-    await registerUser();
+    Navigator.of(context).pushNamed(
+      InterestsPage.routeID,
+      arguments: widget.userInterface,
+    );
+  }
+
+  Future<void> _getLatitudeLongitudeForCity(String city) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final List cityCoordinates =
+        await CityCountryAPI().getLatitudeLongitudeForCity(city);
+    if (cityCoordinates.isNotEmpty) {
+      final locationData = cityCoordinates[0];
+      final Position position = Position(
+        latitude: locationData['latitude'],
+        longitude: locationData['longitude'],
+        timestamp: DateTime.now(),
+        altitude: 0.0,
+        accuracy: 0.0,
+        heading: 0.0,
+        speed: 0.0,
+        speedAccuracy: 0.0,
+        altitudeAccuracy: 0,
+        headingAccuracy: 0,
+      );
+      setState(() {
+        _currentPosition = position;
+        _isLoading = false;
+        isDisabled = false;
+      });
+    }
   }
 
   Future<void> _getCurrentPosition() async {
@@ -72,45 +101,6 @@ class _GeoLocationPageState extends State<GeoLocationPage> {
     });
   }
 
-  Future<void> registerUser() async {
-    try {
-      final UserModel userModel = UserModel.fromInterface(widget.userInterface);
-      final int isUserRegistered = await _apiRepository.registerUser(
-        userModel,
-      );
-      // final bool isUserSQLRegistered =
-      //     await _apiRepository.registerUserSQL(userModel);
-      if (context.mounted) {
-        if (isUserRegistered == 200) {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            InterestsPage.routeID,
-            (route) => false,
-          );
-        } else if (isUserRegistered == 409) {
-          errorSnackBar(context: context, error: ErrorState.userExists);
-          Future.delayed(
-              const Duration(
-                milliseconds: 500,
-              ), () {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              HomePage.routeID,
-              (route) => false,
-            );
-          });
-        } else {
-          debugError("User not created!", "geolocation_screen.dart");
-          errorSnackBar(context: context, error: ErrorState.serverError);
-        }
-      }
-    } catch (err) {
-      debugError(err.toString(), filename);
-      if (context.mounted) {
-        errorSnackBar(context: context, error: ErrorState.serverError);
-      }
-      rethrow;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,7 +108,18 @@ class _GeoLocationPageState extends State<GeoLocationPage> {
         backgroundColor: Colors.transparent,
         actions: [
           TextButton(
-            onPressed: navigateToHomePage,
+            onPressed: () async {
+              final result = await showDialog(
+                context: context,
+                builder: (context) => const CountryCityDialog(),
+              );
+
+              if (result != null) {
+                print('Selected Country: ${result['country']}');
+                print('Selected City: ${result['city']}');
+                _getLatitudeLongitudeForCity(result["city"]);
+              }
+            },
             child: const Text("Skip"),
           ),
         ],
@@ -153,7 +154,7 @@ class _GeoLocationPageState extends State<GeoLocationPage> {
                   ? _getCurrentPosition()
                   : Future.delayed(
                       const Duration(milliseconds: 200),
-                      navigateToHomePage,
+                      navigateToInterestsPage,
                     ),
               child: Container(
                 width: double.infinity,

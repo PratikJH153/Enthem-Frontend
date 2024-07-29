@@ -1,5 +1,6 @@
 import 'package:enthem2/constants/page_padding.dart';
 import 'package:enthem2/helper/error_constants.dart';
+import 'package:enthem2/interfaces/user.dart';
 import 'package:enthem2/logic/repositories/user_api_repository.dart';
 import 'package:enthem2/models/user.dart';
 import 'package:enthem2/screens/home/home_screen.dart';
@@ -10,11 +11,10 @@ import 'package:flutter/material.dart';
 import '../../constants/interests.dart';
 
 class InterestsPage extends StatefulWidget {
+  final UserInterface userInterface;
   static const routeID = "/interestspage";
 
-  final UserModel? userModel;
-
-  const InterestsPage({this.userModel, super.key});
+  const InterestsPage({required this.userInterface, super.key});
 
   @override
   State<InterestsPage> createState() => _InterestsPageState();
@@ -32,31 +32,32 @@ class _InterestsPageState extends State<InterestsPage> {
     );
   }
 
-  void addInterests() async {
+  Future<void> registerUser() async {
     try {
-      if (selectedInterests.isEmpty ||
-          selectedInterests.length < 5 ||
-          selectedInterests.length > 15) {
-        return errorSnackBar(
-          context: context,
-          error: ErrorState.interestsNotAdded,
-        );
-      }
-      late final String id;
-      if (widget.userModel == null) {
-        id = _apiRepository.getUserID();
-      } else {
-        id = widget.userModel!.uid!;
-      }
-      final data = await _apiRepository.addInterests(
-        id,
-        selectedInterests,
+      final UserModel userModel = UserModel.fromInterface(widget.userInterface);
+      userModel.interests = selectedInterests;
+      final int isUserRegistered = await _apiRepository.registerUser(
+        userModel,
       );
-      debugData(data, filename);
-      if (data) {
-        navigateToHomePage();
-      } else {
-        if (context.mounted) {
+      if (context.mounted) {
+        if (isUserRegistered == 200) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            HomePage.routeID,
+            (route) => false,
+          );
+        } else if (isUserRegistered == 409) {
+          errorSnackBar(context: context, error: ErrorState.userExists);
+          Future.delayed(
+              const Duration(
+                milliseconds: 500,
+              ), () {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              HomePage.routeID,
+              (route) => false,
+            );
+          });
+        } else {
+          debugError("User not created!", "interests_screen.dart");
           errorSnackBar(context: context, error: ErrorState.serverError);
         }
       }
@@ -77,7 +78,7 @@ class _InterestsPageState extends State<InterestsPage> {
         isDisabled: selectedInterests.isEmpty ||
             selectedInterests.length < 5 ||
             selectedInterests.length > 15,
-        onTap: addInterests,
+        onTap: registerUser,
       ),
       body: SafeArea(
         child: Padding(

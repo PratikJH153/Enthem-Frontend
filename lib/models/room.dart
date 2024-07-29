@@ -30,7 +30,7 @@ class Room extends Equatable {
   }
 
   factory Room.fromJson(Map<String, dynamic> json) {
-    final List<double> coordinates = [-90, -90];
+    final List<double> coordinates = [];
     if (json["location"] != null) {
       json["location"]["coordinates"].forEach(
         (c) => coordinates.add(
