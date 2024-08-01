@@ -65,7 +65,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'enthem2-e9286.appspot.com',
     androidClientId: '889829470702-68b6fnd69q635bce111c7f7nlopr16o2.apps.googleusercontent.com',
     iosClientId: '889829470702-ieb7gkgkrcsmqr3907prqm6glj74pgeh.apps.googleusercontent.com',
-    iosBundleId: 'com.example.enthem2',
+    iosBundleId: 'com.haum.enthem2',
   );
 
 }

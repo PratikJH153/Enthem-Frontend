@@ -1,4 +1,4 @@
-package com.example.enthem2
+package com.haum.enthem2
 
 import io.flutter.embedding.android.FlutterActivity
 
