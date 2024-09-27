@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:889829470702:android:a942a61253dfa78a6adeff",
         "android_client_info": {
-          "package_name": "com.example.enthem2"
+          "package_name": "com.haum.enthem2"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "889829470702-ihhsep6pase9pm4ubp2kn6qe9224ulhk.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.enthem2",
+            "package_name": "com.haum.enthem2",
             "certificate_hash": "4f2dcf273366aafb0d47784f6e61b87c6372050f"
           }
         },
@@ -25,7 +25,7 @@
           "client_id": "889829470702-uvsrghinade3fl7i5bdud4qgglqj3ehn.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.enthem2",
+            "package_name": "com.haum.enthem2",
             "certificate_hash": "160a65ac976508dd3133da2ded1855bbf680d6f6"
           }
         },
@@ -50,7 +50,7 @@
               "client_id": "889829470702-ieb7gkgkrcsmqr3907prqm6glj74pgeh.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.enthem2"
+                "bundle_id": "com.haum.enthem2"
               }
             }
           ]
@@ -110,7 +110,7 @@
               "client_id": "889829470702-ieb7gkgkrcsmqr3907prqm6glj74pgeh.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.enthem2"
+                "bundle_id": "com.haum.enthem2"
               }
             }
           ]
