@@ -2,6 +2,8 @@
 
 **Enthem - Connecting People through Recommendations**
 
+Backend Repository: https://github.com/PratikJH153/Enthem-Backend.git
+
 ## Table of Contents
 
 - [Description](#description)
